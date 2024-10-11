@@ -221,3 +221,5 @@ const liverpoolFCData = {
         }
     }
 };
+
+export default liverpoolFCData;
