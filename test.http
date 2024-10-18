@@ -1,0 +1,5 @@
+GET  http://localhost:8989/players/all
+
+GET http://localhost:8989/players/1
+
+GET http://localhost:8989/matches/1/scorers
