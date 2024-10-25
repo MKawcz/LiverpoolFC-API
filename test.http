@@ -1,5 +1,401 @@
-GET  http://localhost:8989/players/all
+### Players API
 
-GET http://localhost:8989/players/1
+# GET all players
+GET http://localhost:8989/api/v1/players
+Content-Type: application/json
 
-GET http://localhost:8989/matches/1/scorers
+###
+
+# GET a single player
+GET http://localhost:8989/api/v1/players/1
+Content-Type: application/json
+
+###
+
+# POST a new player
+POST http://localhost:8989/api/v1/players
+Content-Type: application/json
+
+{
+    "name": "Trent Alexander-Arnold",
+    "position": "Defender",
+    "nationality": "England"
+}
+
+###
+
+# PUT update player
+PUT http://localhost:8989/api/v1/players/1
+Content-Type: application/json
+
+{
+    "name": "Mohamed Salah",
+    "position": "Forward",
+    "nationality": "Egypt"
+}
+
+###
+
+# PATCH update player partially
+PATCH http://localhost:8989/api/v1/players/1
+Content-Type: application/json
+
+{
+    "position": "Winger"
+}
+
+###
+
+# DELETE a player
+DELETE http://localhost:8989/api/v1/players/3
+Content-Type: application/json
+
+###
+
+# GET player stats
+GET http://localhost:8989/api/v1/players/1/stats
+Content-Type: application/json
+
+###
+
+# POST player stats
+POST http://localhost:8989/api/v1/players/1/stats
+Content-Type: application/json
+
+{
+    "appearances": 300,
+    "goals": 180,
+    "assists": 75,
+    "yellowCards": 10,
+    "redCards": 1
+}
+
+###
+
+# PUT update player stats
+PUT http://localhost:8989/api/v1/players/1/stats
+Content-Type: application/json
+
+{
+    "appearances": 305,
+    "goals": 185,
+    "assists": 77
+}
+
+###
+
+# PATCH update player stats
+PATCH http://localhost:8989/api/v1/players/1/stats
+Content-Type: application/json
+
+{
+    "yellowCards": 12
+}
+
+###
+
+# DELETE player stats
+DELETE http://localhost:8989/api/v1/players/1/stats
+Content-Type: application/json
+
+###
+
+# GET player contract
+GET http://localhost:8989/api/v1/players/1/contract
+Content-Type: application/json
+
+###
+
+# POST player contract
+POST http://localhost:8989/api/v1/players/1/contract
+Content-Type: application/json
+
+{
+    "start": "2021-07-01",
+    "end": "2026-06-30",
+    "salary": 180000,
+    "bonuses": {
+        "goal": 3000,
+        "assist": 1500
+    }
+}
+
+###
+
+# PUT update player contract
+PUT http://localhost:8989/api/v1/players/1/contract
+Content-Type: application/json
+
+{
+    "start": "2020-07-01",
+    "end": "2027-06-30",
+    "salary": 200000
+}
+
+###
+
+# PATCH update player contract
+PATCH http://localhost:8989/api/v1/players/1/contract
+Content-Type: application/json
+
+{
+    "salary": 220000
+}
+
+###
+
+# DELETE player contract
+DELETE http://localhost:8989/api/v1/players/1/contract
+Content-Type: application/json
+
+###
+
+### Matches API
+
+# GET all matches
+GET http://localhost:8989/api/v1/matches
+Content-Type: application/json
+
+###
+
+# GET a single match
+GET http://localhost:8989/api/v1/matches/1
+Content-Type: application/json
+
+###
+
+# POST a new match
+POST http://localhost:8989/api/v1/matches
+Content-Type: application/json
+
+{
+    "date": "2024-12-01",
+    "opponent": "Chelsea FC",
+    "score": "2-2",
+    "stadium": {
+        "name": "Stamford Bridge",
+        "capacity": 41000,
+        "location": "London, UK"
+    }
+}
+
+###
+
+# PUT update match
+PUT http://localhost:8989/api/v1/matches/1
+Content-Type: application/json
+
+{
+    "score": "3-1"
+}
+
+###
+
+# PATCH update match partially
+PATCH http://localhost:8989/api/v1/matches/1
+Content-Type: application/json
+
+{
+    "opponent": "Manchester City"
+}
+
+###
+
+# DELETE a match
+DELETE http://localhost:8989/api/v1/matches/2
+Content-Type: application/json
+
+###
+
+# GET goals for a match
+GET http://localhost:8989/api/v1/matches/1/goals
+Content-Type: application/json
+
+###
+
+# POST a new goal for a match
+POST http://localhost:8989/api/v1/matches/1/goals
+Content-Type: application/json
+
+{
+    "playerId": 1,
+    "minute": 45
+}
+
+###
+
+# PUT update a goal for a match
+PUT http://localhost:8989/api/v1/matches/1/goals
+Content-Type: application/json
+
+{
+    "id": 1,
+    "playerId": 1,
+    "minute": 50
+}
+
+###
+
+# PATCH update a goal for a match
+PATCH http://localhost:8989/api/v1/matches/1/goals
+Content-Type: application/json
+
+{
+    "id": 1,
+    "minute": 52
+}
+
+###
+
+# DELETE a goal for a match
+DELETE http://localhost:8989/api/v1/matches/1/goals
+Content-Type: application/json
+
+{
+    "id": 1
+}
+
+###
+
+# GET lineup for a match
+GET http://localhost:8989/api/v1/matches/1/lineup
+Content-Type: application/json
+
+###
+
+# POST a new lineup for a match
+POST http://localhost:8989/api/v1/matches/1/lineup
+Content-Type: application/json
+
+{
+    "starting": [1, 2, 3],
+    "substitutes": [4, 5]
+}
+
+###
+
+# PUT update lineup for a match
+PUT http://localhost:8989/api/v1/matches/1/lineup
+Content-Type: application/json
+
+{
+    "starting": [1, 2, 3, 6],
+    "substitutes": [4, 5, 7]
+}
+
+###
+
+# PATCH update lineup for a match
+PATCH http://localhost:8989/api/v1/matches/1/lineup
+Content-Type: application/json
+
+{
+    "substitutes": [8, 9]
+}
+
+###
+
+# DELETE lineup for a match
+DELETE http://localhost:8989/api/v1/matches/1/lineup
+Content-Type: application/json
+
+###
+
+### Trophies API
+
+# GET all trophies
+GET http://localhost:8989/api/v1/trophies
+Content-Type: application/json
+
+###
+
+# GET a single trophy
+GET http://localhost:8989/api/v1/trophies/1
+Content-Type: application/json
+
+###
+
+# POST a new trophy
+POST http://localhost:8989/api/v1/trophies
+Content-Type: application/json
+
+{
+    "name": "Carabao Cup",
+    "topScorerId": 1,
+    "finalsWon": 3
+}
+
+###
+
+# PUT update trophy
+PUT http://localhost:8989/api/v1/trophies/1
+Content-Type: application/json
+
+{
+    "name": "Premier League",
+    "finalsWon": 3
+}
+
+###
+
+# PATCH update trophy partially
+PATCH http://localhost:8989/api/v1/trophies/1
+Content-Type: application/json
+
+{
+    "finalsWon": 4
+}
+
+###
+
+# DELETE a trophy
+DELETE http://localhost:8989/api/v1/trophies/2
+Content-Type: application/json
+
+###
+
+# GET seasons for a trophy
+GET http://localhost:8989/api/v1/trophies/1/seasons
+Content-Type: application/json
+
+###
+
+# POST a new season for a trophy
+POST http://localhost:8989/api/v1/trophies/1/seasons
+Content-Type: application/json
+
+{
+    "year": 2025
+}
+
+###
+
+# PUT update a season for a trophy
+PUT http://localhost:8989/api/v1/trophies/1/seasons
+Content-Type: application/json
+
+{
+    "id": 1,
+    "year": 2026
+}
+
+###
+
+# PATCH update a season for a trophy
+PATCH http://localhost:8989/api/v1/trophies/1/seasons
+Content-Type: application/json
+
+{
+    "id": 1,
+    "year": 2027
+}
+
+###
+
+# DELETE a season for a trophy
+DELETE http://localhost:8989/api/v1/trophies/1/seasons
+Content-Type: application/json
+
+{
+    "id": 1
+}
