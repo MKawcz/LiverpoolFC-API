@@ -1,24 +1,24 @@
 import express from 'express';
+import connectDB from './config/db.js'
+import cors from 'cors';
 import { playersRouter } from './routes/playersRoute.js';
 import { matchesRouter } from './routes/matchesRoute.js';
 import { trophiesRouter } from './routes/trophiesRoute.js';
 
 const app = express();
-app.use(express.json());
 
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-//     next();
-// });
-//sprawdz czy headery git bo mozliwe ze mozna bez 'Access-Control-Allow-Headers' i samo set zamiast setHeader
-// jezeli content type jest inny niz ten co ustawisz to powinnismy zwracac 405
+app.use(express.json());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+connectDB();
 
 app.use((req, res, next) => {
-    const ct = res.setHeader('Content-Type');
-    if(ct !== 'application/json') {
-        res.status(400);
+    if (!res.getHeader('Content-Type')) {
+        res.setHeader('Content-Type', 'application/json');
     }
     next();
 });

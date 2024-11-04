@@ -1,87 +1,77 @@
+// routes/trophiesRoute.js
 import express from 'express';
-import { trophies, seasons } from '../data.js';
+import { Trophy } from '../models/Trophy.js';
 
 export const trophiesRouter = express.Router();
 
-trophiesRouter.get('/', (req, res) => {
-  res.json(trophies);
+// GET all trophies
+trophiesRouter.get('/', async (req, res) => {
+    try {
+        const trophies = await Trophy.find().populate('topScorer');
+        res.status(200).json({
+            data: trophies,
+            links: { self: '/api/v1/trophies' },
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 });
 
-trophiesRouter.post('/', (req, res) => {
-  const newTrophy = { ...req.body, id: trophies.length + 1 };
-  trophies.push(newTrophy);
-  res.status(201).json(newTrophy);
+// GET a specific trophy
+trophiesRouter.get('/:trophyId', async (req, res) => {
+    try {
+        const trophy = await Trophy.findById(req.params.trophyId).populate('topScorer');
+        if (trophy) {
+            res.status(200).json({
+                data: trophy,
+                links: {
+                    self: `/api/v1/trophies/${req.params.trophyId}`,
+                    seasons: `/api/v1/trophies/${req.params.trophyId}/seasons`,
+                }
+            });
+        } else {
+            res.status(404).json({ message: 'Trophy not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 });
 
-trophiesRouter.route('/:trophyId')
-  .get((req, res) => {
-    const trophy = trophies.find(t => t.id === parseInt(req.params.trophyId));
-    if (trophy) res.json(trophy);
-    else res.status(404).json({ message: 'Trophy not found' });
-  })
-  .put((req, res) => {
-    const trophyIndex = trophies.findIndex(t => t.id === parseInt(req.params.trophyId));
-    if (trophyIndex !== -1) {
-      trophies[trophyIndex] = { ...trophies[trophyIndex], ...req.body };
-      res.json(trophies[trophyIndex]);
-    } else {
-      res.status(404).json({ message: 'Trophy not found' });
+// POST a new trophy
+trophiesRouter.post('/', async (req, res) => {
+    try {
+        const newTrophy = new Trophy(req.body);
+        await newTrophy.save();
+        res.status(201).json(newTrophy);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid data', error });
     }
-  })
-  .patch((req, res) => {
-    const trophy = trophies.find(t => t.id === parseInt(req.params.trophyId));
-    if (trophy) {
-      Object.assign(trophy, req.body);
-      res.json(trophy);
-    } else {
-      res.status(404).json({ message: 'Trophy not found' });
-    }
-  })
-  .delete((req, res) => {
-    const trophyIndex = trophies.findIndex(t => t.id === parseInt(req.params.trophyId));
-    if (trophyIndex !== -1) {
-      trophies.splice(trophyIndex, 1);
-      res.status(204).send();
-    } else {
-      res.status(404).json({ message: 'Trophy not found' });
-    }
-  });
+});
 
-trophiesRouter.route('/:trophyId/seasons')
-  .get((req, res) => {
-    const trophySeasons = seasons.filter(s => s.trophyId === parseInt(req.params.trophyId));
-    if (trophySeasons.length > 0) res.json(trophySeasons);
-    else res.status(404).json({ message: 'No seasons found for this trophy' });
-  })
-  .post((req, res) => {
-    const newSeason = { ...req.body, trophyId: parseInt(req.params.trophyId), id: seasons.length + 1 };
-    seasons.push(newSeason);
-    res.status(201).json(newSeason);
-  })
-  .put((req, res) => {
-    const seasonIndex = seasons.findIndex(s => s.id === parseInt(req.body.id) && s.trophyId === parseInt(req.params.trophyId));
-    if (seasonIndex !== -1) {
-      seasons[seasonIndex] = { ...seasons[seasonIndex], ...req.body };
-      res.json(seasons[seasonIndex]);
-    } else {
-      res.status(404).json({ message: 'Season not found' });
+// PUT to update a specific trophy
+trophiesRouter.put('/:trophyId', async (req, res) => {
+    try {
+        const trophy = await Trophy.findByIdAndUpdate(req.params.trophyId, req.body, { new: true });
+        if (trophy) {
+            res.status(200).json(trophy);
+        } else {
+            res.status(404).json({ message: 'Trophy not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid data', error });
     }
-  })
-  .patch((req, res) => {
-    const season = seasons.find(s => s.id === parseInt(req.body.id) && s.trophyId === parseInt(req.params.trophyId));
-    if (season) {
-      Object.assign(season, req.body);
-      res.json(season);
-    } else {
-      res.status(404).json({ message: 'Season not found' });
+});
+
+// DELETE a specific trophy
+trophiesRouter.delete('/:trophyId', async (req, res) => {
+    try {
+        const trophy = await Trophy.findByIdAndDelete(req.params.trophyId);
+        if (trophy) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ message: 'Trophy not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
     }
-  })
-  .delete((req, res) => {
-    const seasonIndex = seasons.findIndex(s => s.id === parseInt(req.body.id) && s.trophyId === parseInt(req.params.trophyId));
-    if (seasonIndex !== -1) {
-      seasons.splice(seasonIndex, 1);
-      res.status(204).send();
-    } else {
-      res.status(404).json({ message: 'Season not found' });
-    }
-  });
+});
