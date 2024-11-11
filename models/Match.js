@@ -1,14 +1,8 @@
 import mongoose from 'mongoose';
 
-const StadiumSchema = new mongoose.Schema({
-    name: String,
-    capacity: Number,
-    location: String,
-}, { _id: false });
-
 const GoalSchema = new mongoose.Schema({
     playerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
-    minute: Number,
+    minute: { type: Number, required: true }
 });
 
 const LineupSchema = new mongoose.Schema({
@@ -17,10 +11,10 @@ const LineupSchema = new mongoose.Schema({
 }, { _id: false });
 
 const MatchSchema = new mongoose.Schema({
-    date: Date,
-    opponent: String,
-    score: String,
-    stadium: StadiumSchema,
+    date: { type: Date, required: true },
+    opponent: { type: String, required: true },
+    score: { type: String, required: true },
+    stadiumId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stadium' },
     goals: [GoalSchema],
     lineup: LineupSchema,
 });

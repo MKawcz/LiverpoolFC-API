@@ -1,13 +1,12 @@
-// routes/matchesRoute.js
 import express from 'express';
 import { Match } from '../models/Match.js';
+import { validatePostPut, validatePatch } from '../validation.js';
 
 export const matchesRouter = express.Router();
 
-// GET all matches
 matchesRouter.get('/', async (req, res) => {
     try {
-        const matches = await Match.find().populate('goals.playerId');
+        const matches = await Match.find().select('date opponent score');
         res.status(200).json({
             data: matches,
             links: { self: '/api/v1/matches' },
@@ -17,18 +16,18 @@ matchesRouter.get('/', async (req, res) => {
     }
 });
 
-// GET a specific match
 matchesRouter.get('/:matchId', async (req, res) => {
     try {
-        const match = await Match.findById(req.params.matchId).populate('goals.playerId');
+        const match = await Match.findById(req.params.matchId).select('date opponent score');
         if (match) {
             res.status(200).json({
                 data: match,
                 links: {
                     self: `/api/v1/matches/${req.params.matchId}`,
+                    stadium: `/api/v1/stadiums/${match.stadiumId}`,
                     goals: `/api/v1/matches/${req.params.matchId}/goals`,
                     lineup: `/api/v1/matches/${req.params.matchId}/lineup`,
-                }
+                },
             });
         } else {
             res.status(404).json({ message: 'Match not found' });
@@ -38,32 +37,63 @@ matchesRouter.get('/:matchId', async (req, res) => {
     }
 });
 
-// POST a new match
-matchesRouter.post('/', async (req, res) => {
-    try {
-        const newMatch = new Match(req.body);
-        await newMatch.save();
-        res.status(201).json(newMatch);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid data', error });
-    }
-});
+matchesRouter.post(
+    '/',
+    validatePostPut(['date', 'opponent', 'score', 'stadiumId']),
+    async (req, res) => {
+        try {
+            const stadium = await Stadium.findById(req.body.stadiumId);
+            if (!stadium) {
+                return res.status(404).json({ message: 'Stadium not found' });
+            }
 
-// PUT to update a specific match
-matchesRouter.put('/:matchId', async (req, res) => {
-    try {
-        const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
-        if (match) {
-            res.status(200).json(match);
-        } else {
-            res.status(404).json({ message: 'Match not found' });
+            const newMatch = new Match(req.body);
+            await newMatch.save();
+            res.status(201).json({
+                data: newMatch,
+                links: {
+                    self: `/api/v1/matches/${newMatch._id}`,
+                    stadium: `/api/v1/stadiums/${newMatch.stadiumId}`,
+                },
+            });
+        } catch (error) {
+            res.status(400).json({ message: 'Invalid data', error });
         }
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid data', error });
     }
-});
+);
 
-// DELETE a specific match
+matchesRouter.put(
+    '/:matchId',
+    validatePostPut(['date', 'opponent', 'score', 'stadiumId']),
+    async (req, res) => {
+        try {
+            const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
+            if (!match) {
+                return res.status(404).json({ message: 'Match not found' });
+            }
+            res.status(200).json(match);
+        } catch (error) {
+            res.status(400).json({ message: 'Invalid data', error });
+        }
+    }
+);
+
+matchesRouter.patch(
+    '/:matchId',
+    validatePatch(['date', 'opponent', 'score', 'stadiumId']),
+    async (req, res) => {
+        try {
+            const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
+            if (!match) {
+                return res.status(404).json({ message: 'Match not found' });
+            }
+            res.status(200).json(match);
+        } catch (error) {
+            res.status(400).json({ message: 'Invalid data', error });
+        }
+    }
+);
+
 matchesRouter.delete('/:matchId', async (req, res) => {
     try {
         const match = await Match.findByIdAndDelete(req.params.matchId);
@@ -74,5 +104,69 @@ matchesRouter.delete('/:matchId', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+matchesRouter.get('/:matchId/goals', async (req, res) => {
+    try {
+        const match = await Match.findById(req.params.matchId).select('goals');
+        if (!match) {
+            return res.status(404).json({ message: 'Match not found' });
+        }
+        res.status(200).json({
+            data: match.goals,
+            links: {
+                self: `/api/v1/matches/${req.params.matchId}/goals`,
+                match: `/api/v1/matches/${req.params.matchId}`
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+matchesRouter.post('/:matchId/goals', async (req, res) => {
+    try {
+        const match = await Match.findById(req.params.matchId);
+        if (!match) {
+            return res.status(404).json({ message: 'Match not found' });
+        }
+        match.goals.push(req.body);
+        await match.save();
+        res.status(201).json(match.goals);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid data', error });
+    }
+});
+
+matchesRouter.get('/:matchId/lineup', async (req, res) => {
+    try {
+        const match = await Match.findById(req.params.matchId).select('lineup');
+        if (!match) {
+            return res.status(404).json({ message: 'Match not found' });
+        }
+        res.status(200).json({
+            data: match.lineup,
+            links: {
+                self: `/api/v1/matches/${req.params.matchId}/lineup`,
+                match: `/api/v1/matches/${req.params.matchId}`
+            },
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+matchesRouter.put('/:matchId/lineup', async (req, res) => {
+    try {
+        const match = await Match.findById(req.params.matchId);
+        if (!match) {
+            return res.status(404).json({ message: 'Match not found' });
+        }
+        match.lineup = req.body;
+        await match.save();
+        res.status(200).json(match.lineup);
+    } catch (error) {
+        res.status(400).json({ message: 'Invalid data', error });
     }
 });
