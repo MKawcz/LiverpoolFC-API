@@ -39,7 +39,7 @@ matchesRouter.get('/:matchId', async (req, res) => {
 
 matchesRouter.post(
     '/',
-    validatePostPut(['date', 'opponent', 'score', 'stadiumId']),
+    validatePostPut(['date', 'opponent', 'score', 'stadiumId', 'goals', 'lineup']),
     async (req, res) => {
         try {
             const stadium = await Stadium.findById(req.body.stadiumId);
@@ -64,7 +64,7 @@ matchesRouter.post(
 
 matchesRouter.put(
     '/:matchId',
-    validatePostPut(['date', 'opponent', 'score', 'stadiumId']),
+    validatePostPut(['date', 'opponent', 'score', 'stadiumId', 'goals', 'lineup']),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
@@ -80,7 +80,7 @@ matchesRouter.put(
 
 matchesRouter.patch(
     '/:matchId',
-    validatePatch(['date', 'opponent', 'score', 'stadiumId']),
+    validatePatch(['date', 'opponent', 'score', 'stadiumId',  'goals', 'lineup']),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });

@@ -10,8 +10,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@apollo/server": "^4.11.2",
+    "@graphql-tools/schema": "^10.0.7",
+    "@grpc/grpc-js": "^1.12.2",
+    "apollo-server-express": "^3.13.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "mongoose": "^8.8.0"
+    "graphql": "^16.9.0",
+    "graphql-scalars": "^1.23.0",
+    "graphql-tag": "^2.12.6",
+    "mongoose": "^8.8.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

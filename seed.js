@@ -3,6 +3,8 @@ import connectDB from './config/db.js';
 import { Player } from './models/Player.js';
 import { Match } from './models/Match.js';
 import { Trophy } from './models/Trophy.js';
+import { Manager } from './models/Manager.js';
+import { Stadium } from './models/Stadium.js';
 import fs from 'fs';
 
 await connectDB();
@@ -14,17 +16,31 @@ const importData = async () => {
     await Player.deleteMany();
     await Match.deleteMany();
     await Trophy.deleteMany();
+    await Manager.deleteMany();
+    await Stadium.deleteMany();
 
     const players = await Player.insertMany(data.players);
+    const managers = await Manager.insertMany(data.managers);
+    const stadiums = await Stadium.insertMany(data.stadiums);
 
-    const playerIdMap = {
-      "playerId_placeholder_1": players[0]._id,
-      "playerId_placeholder_2": players[1]._id,
-      "playerId_placeholder_3": players[2]._id
-    };
+    const playerIdMap = players.reduce((map, player, index) => {
+      map[`playerId_placeholder_${index + 1}`] = player._id;
+      return map;
+    }, {});
+
+    const managerIdMap = managers.reduce((map, manager, index) => {
+      map[`managerId_placeholder_${index + 1}`] = manager._id;
+      return map;
+    }, {});
+
+    const stadiumIdMap = stadiums.reduce((map, stadium, index) => {
+      map[`stadiumId_placeholder_${index + 1}`] = stadium._id;
+      return map;
+    }, {});
 
     const matches = data.matches.map(match => ({
       ...match,
+      stadiumId: stadiumIdMap[match.stadiumId],
       goals: match.goals.map(goal => ({
         ...goal,
         playerId: playerIdMap[goal.playerId]
@@ -38,6 +54,10 @@ const importData = async () => {
     const trophies = data.trophies.map(trophy => ({
       ...trophy,
       topScorer: playerIdMap[trophy.topScorer],
+      seasons: trophy.seasons.map(season => ({
+        ...season,
+        managerId: managerIdMap[season.managerId]
+      }))
     }));
 
     await Match.insertMany(matches);

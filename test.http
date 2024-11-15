@@ -1,4 +1,6 @@
-### Dodaj nowego gracza
+### Testy graczy ###
+
+# Dodaj nowego gracza
 POST http://localhost:8989/api/v1/players
 Content-Type: application/json
 
@@ -24,14 +26,14 @@ Content-Type: application/json
   }
 }
 
-### Pobierz wszystkich graczy
+# Pobierz wszystkich graczy
 GET http://localhost:8989/api/v1/players
 
-### Pobierz gracza o określonym ID
-GET http://localhost:8989/api/v1/players/67289ce2f8593d87ae74ebda
+# Pobierz gracza o określonym ID
+GET http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e
 
-### Zaktualizuj dane gracza
-PUT http://localhost:8989/api/v1/players/{{playerId}}
+# Zaktualizuj dane gracza
+PUT http://localhost:8989/api/v1/players/6736673fe2cd11ac436ddacc
 Content-Type: application/json
 
 {
@@ -47,10 +49,58 @@ Content-Type: application/json
   }
 }
 
-### Usuń gracza
-DELETE http://localhost:8989/api/v1/players/{{playerId}}
+# Usuń gracza
+DELETE http://localhost:8989/api/v1/players/6736673fe2cd11ac436ddacc
 
-### Dodaj nowy mecz
+# Pobierz statystyki gracza
+GET http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/stats
+
+# Zaktualizuj statystyki gracza
+PUT http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/stats
+Content-Type: application/json
+
+{
+  "appearances": 215,
+  "goals": 13,
+  "assists": 57,
+  "yellowCards": 5,
+  "redCards": 1
+}
+
+# Pobierz kontrakt gracza
+GET http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/contract
+
+# Zaktualizuj kontrakt gracza
+PUT http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/contract
+Content-Type: application/json
+
+{
+  "start": "2020-01-01",
+  "end": "2026-12-31",
+  "salary": 170000,
+  "bonuses": {
+    "goal": 4000,
+    "assist": 2500
+  }
+}
+
+# Pobierz bonusy z kontraktu gracza
+GET http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/contract/bonuses
+
+# Zaktualizuj bonusy w kontrakcie gracza
+PUT http://localhost:8989/api/v1/players/673663ba697049c27a7ce67e/contract/bonuses
+Content-Type: application/json
+
+{
+  "goal": 4000,
+  "assist": 3000
+}
+
+---
+
+### Testy meczów ###
+
+# Dodaj nowy mecz
 POST http://localhost:8989/api/v1/matches
 Content-Type: application/json
 
@@ -58,85 +108,141 @@ Content-Type: application/json
   "date": "2024-11-01",
   "opponent": "Arsenal",
   "score": "2-0",
-  "stadium": {
-    "name": "Anfield",
-    "capacity": 54000,
-    "location": "Liverpool, UK"
-  },
+  "stadiumId": "673663ba697049c27a7ce684",
   "goals": [
-    { "playerId": "{{playerId}}", "minute": 15 },
-    { "playerId": "{{playerId}}", "minute": 65 }
+    { "playerId": "673663ba697049c27a7ce67e", "minute": 15 },
+    { "playerId": "673663ba697049c27a7ce67e", "minute": 65 }
   ],
   "lineup": {
-    "starting": ["{{playerId}}"],
+    "starting": ["673663ba697049c27a7ce67e"],
     "substitutes": []
   }
 }
 
-### Pobierz wszystkie mecze
+# Pobierz wszystkie mecze
 GET http://localhost:8989/api/v1/matches
 
-### Pobierz mecz o określonym ID
-GET http://localhost:8989/api/v1/matches/{{matchId}}
+# Pobierz mecz o określonym ID
+GET http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b
 
-### Zaktualizuj dane meczu
-PUT http://localhost:8989/api/v1/matches/{{matchId}}
+# Zaktualizuj dane meczu
+PUT http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b
 Content-Type: application/json
 
 {
   "date": "2024-11-01",
   "opponent": "Arsenal",
   "score": "3-1",
-  "stadium": {
-    "name": "Anfield",
-    "capacity": 54000,
-    "location": "Liverpool, UK"
-  },
+  "stadiumId": "673663ba697049c27a7ce684",
   "goals": [
-    { "playerId": "{{playerId}}", "minute": 15 },
-    { "playerId": "{{playerId}}", "minute": 65 },
-    { "playerId": "{{playerId}}", "minute": 90 }
+    { "playerId": "673663ba697049c27a7ce67e", "minute": 15 },
+    { "playerId": "673663ba697049c27a7ce67e", "minute": 65 },
+    { "playerId": "673663ba697049c27a7ce67e", "minute": 90 }
   ],
   "lineup": {
-    "starting": ["{{playerId}}"],
+    "starting": ["673663ba697049c27a7ce67e"],
     "substitutes": []
   }
 }
 
-### Usuń mecz
-DELETE http://localhost:8989/api/v1/matches/{{matchId}}
+# Usuń mecz
+DELETE http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b
 
-### Dodaj nowe trofeum
+# Pobierz gole w meczu
+GET http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b/goals
+
+# Dodaj gol do meczu
+POST http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b/goals
+Content-Type: application/json
+
+{
+  "playerId": "673663ba697049c27a7ce67d",
+  "minute": 90
+}
+
+# Pobierz skład meczu
+GET http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b/lineup
+
+# Zaktualizuj skład meczu
+PUT http://localhost:8989/api/v1/matches/673663ba697049c27a7ce68b/lineup
+Content-Type: application/json
+
+{
+  "starting": ["673663ba697049c27a7ce67d"],
+  "substitutes": ["673663ba697049c27a7ce67d"]
+}
+
+---
+
+### Testy trofeów ###
+
+# Dodaj nowe trofeum
 POST http://localhost:8989/api/v1/trophies
 Content-Type: application/json
 
 {
   "name": "FA Cup",
-  "topScorer": "{{playerId}}",
+  "topScorer": "673663ba697049c27a7ce67d",
   "finalsWon": 1,
   "seasons": [
-    { "year": 2023, "matchesWon": 5 }
+    { "year": 2023, "matchesWon": 5, "managerId": "673663ba697049c27a7ce67d" }
   ]
 }
 
-### Pobierz wszystkie trofea
+# Pobierz wszystkie trofea
 GET http://localhost:8989/api/v1/trophies
 
-### Pobierz trofeum o określonym ID
-GET http://localhost:8989/api/v1/trophies/{{trophyId}}
+# Pobierz trofeum o określonym ID
+GET http://localhost:8989/api/v1/trophies/673663ba697049c27a7ce68f
 
-### Zaktualizuj dane trofeum
-PUT http://localhost:8989/api/v1/trophies/{{trophyId}}
+# Zaktualizuj dane trofeum
+PUT http://localhost:8989/api/v1/trophies/673663ba697049c27a7ce68f
 Content-Type: application/json
 
 {
   "name": "FA Cup",
-  "topScorer": "{{playerId}}",
+  "topScorer": "673663ba697049c27a7ce67d",
   "finalsWon": 2,
   "seasons": [
-    { "year": 2023, "matchesWon": 6 }
+    { "year": 2023, "matchesWon": 6, "managerId": "673663ba697049c27a7ce681" }
   ]
 }
 
-### Usuń trofeum
-DELETE http://localhost:8989/api/v1/trophies/{{trophyId}}
+# Usuń trofeum
+DELETE http://localhost:8989/api/v1/trophies/673663ba697049c27a7ce68f
+
+# Pobierz sezon trofeum
+GET http://localhost:8989/api/v1/trophies/673663ba697049c27a7ce68f/seasons/0
+
+---
+
+### Testy menadżerów ###
+
+# Dodaj nowego menadżera
+POST http://localhost:8989/api/v1/managers
+Content-Type: application/json
+
+{
+  "name": "Jurgen Klopp",
+  "nationality": "German",
+  "dateOfBirth": "1967-06-16"
+}
+
+# Pobierz wszystkich menadżerów
+GET http://localhost:8989/api/v1/managers
+
+# Pobierz menadżera o określonym ID
+GET http://localhost:8989/api/v1/managers/673663ba697049c27a7ce681
+
+# Zaktualizuj dane menadżera
+PUT http://localhost:8989/api/v1/managers/673663ba697049c27a7ce681
+Content-Type: application/json
+
+{
+  "name": "Jurgen Klopp",
+  "nationality": "Germany",
+  "dateOfBirth": "1967-06-16"
+}
+
+# Usuń menadżera
+DELETE http://localhost:8989/api/v1/managers/673663ba697049c27a7ce681

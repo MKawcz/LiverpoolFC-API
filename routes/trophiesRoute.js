@@ -95,23 +95,28 @@ trophiesRouter.delete('/:trophyId', async (req, res) => {
 });
 
 
-trophiesRouter.get('/:trophyId/seasons', async (req, res) => {
+trophiesRouter.get('/:trophyId/seasons/:seasonIndex', async (req, res) => {
     try {
-        const trophy = await Trophy.findById(req.params.trophyId).select('seasons');
-        if (!trophy) {
-            return res.status(404).json({ message: 'Trophy not found' });
-        }
+        const trophy = await Trophy.findById(req.params.trophyId)
+            .populate('seasons.managerId', 'name nationality');
+        if (!trophy) return res.status(404).json({ message: 'Trophy not found' });
+
+        const season = trophy.seasons[req.params.seasonIndex];
+        if (!season) return res.status(404).json({ message: 'Season not found' });
+
         res.status(200).json({
-            data: trophy.seasons,
+            data: season,
             links: {
-                self: `/api/v1/trophies/${req.params.trophyId}/seasons`,
-                trophy: `/api/v1/trophies/${req.params.trophyId}`
+                self: `/api/v1/trophies/${req.params.trophyId}/seasons/${req.params.seasonIndex}`,
+                manager: `/api/v1/managers/${season.managerId}`,
+                trophy: `/api/v1/trophies/${req.params.trophyId}`,
             },
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
 });
+
 
 trophiesRouter.post('/:trophyId/seasons', async (req, res) => {
     try {

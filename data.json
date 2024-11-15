@@ -1,127 +1,142 @@
 {
-    "players": [
-      {
-        "name": "Mohamed Salah",
-        "position": "Forward",
-        "nationality": "Egypt",
-        "stats": {
-          "appearances": 300,
-          "goals": 180,
-          "assists": 75,
-          "yellowCards": 10,
-          "redCards": 1
-        },
-        "contract": {
-          "start": "2017-07-01",
-          "end": "2025-06-30",
-          "salary": 200000,
-          "bonuses": {
-            "goal": 5000,
-            "assist": 2000
-          }
-        }
+  "players": [
+    {
+      "name": "Mohamed Salah",
+      "position": "Forward",
+      "nationality": "Egypt",
+      "stats": {
+        "appearances": 300,
+        "goals": 180,
+        "assists": 75,
+        "yellowCards": 10,
+        "redCards": 1
       },
-      {
-        "name": "Virgil van Dijk",
-        "position": "Defender",
-        "nationality": "Netherlands",
-        "stats": {
-          "appearances": 200,
-          "goals": 20,
-          "assists": 10,
-          "yellowCards": 5,
-          "redCards": 0
-        },
-        "contract": {
-          "start": "2018-01-01",
-          "end": "2025-06-30",
-          "salary": 180000,
-          "bonuses": {
-            "goal": 4000,
-            "assist": 1500
-          }
-        }
-      },
-      {
-        "name": "Jordan Henderson",
-        "position": "Midfielder",
-        "nationality": "England",
-        "stats": {
-          "appearances": 350,
-          "goals": 50,
-          "assists": 100,
-          "yellowCards": 15,
-          "redCards": 2
-        },
-        "contract": {
-          "start": "2009-07-01",
-          "end": "2024-06-30",
-          "salary": 150000,
-          "bonuses": {
-            "goal": 3000,
-            "assist": 1500
-          }
+      "contract": {
+        "start": "2017-07-01",
+        "end": "2025-06-30",
+        "salary": 200000,
+        "bonuses": {
+          "goal": 5000,
+          "assist": 2000
         }
       }
-    ],
-    "matches": [
-      {
-        "date": "2024-10-01",
-        "opponent": "Manchester United",
-        "score": "3-1",
-        "stadium": {
-          "name": "Anfield",
-          "capacity": 54000,
-          "location": "Liverpool, UK"
-        },
-        "goals": [
-          { "playerId": "playerId_placeholder_1", "minute": 23 },
-          { "playerId": "playerId_placeholder_2", "minute": 57 },
-          { "playerId": "playerId_placeholder_1", "minute": 78 }
-        ],
-        "lineup": {
-          "starting": ["playerId_placeholder_1", "playerId_placeholder_2", "playerId_placeholder_3"],
-          "substitutes": []
-        }
+    },
+    {
+      "name": "Virgil van Dijk",
+      "position": "Defender",
+      "nationality": "Netherlands",
+      "stats": {
+        "appearances": 200,
+        "goals": 20,
+        "assists": 10,
+        "yellowCards": 5,
+        "redCards": 0
       },
-      {
-        "date": "2024-10-15",
-        "opponent": "Chelsea",
-        "score": "2-2",
-        "stadium": {
-          "name": "Stamford Bridge",
-          "capacity": 42000,
-          "location": "London, UK"
-        },
-        "goals": [
-          { "playerId": "playerId_placeholder_3", "minute": 15 },
-          { "playerId": "playerId_placeholder_1", "minute": 65 }
-        ],
-        "lineup": {
-          "starting": ["playerId_placeholder_1", "playerId_placeholder_2", "playerId_placeholder_3"],
-          "substitutes": []
+      "contract": {
+        "start": "2018-01-01",
+        "end": "2025-06-30",
+        "salary": 180000,
+        "bonuses": {
+          "goal": 4000,
+          "assist": 1500
         }
       }
-    ],
-    "trophies": [
-      {
-        "name": "Premier League",
-        "topScorer": "playerId_placeholder_1",
-        "finalsWon": 2,
-        "seasons": [
-          { "year": 2019, "matchesWon": 30 },
-          { "year": 2020, "matchesWon": 32 }
-        ]
+    },
+    {
+      "name": "Jordan Henderson",
+      "position": "Midfielder",
+      "nationality": "England",
+      "stats": {
+        "appearances": 350,
+        "goals": 50,
+        "assists": 100,
+        "yellowCards": 15,
+        "redCards": 2
       },
-      {
-        "name": "Champions League",
-        "topScorer": "playerId_placeholder_2",
-        "finalsWon": 1,
-        "seasons": [
-          { "year": 2018, "matchesWon": 12 },
-          { "year": 2022, "matchesWon": 10 }
-        ]
+      "contract": {
+        "start": "2009-07-01",
+        "end": "2024-06-30",
+        "salary": 150000,
+        "bonuses": {
+          "goal": 3000,
+          "assist": 1500
+        }
       }
-    ]
-  }
-  
+    }
+  ],
+  "stadiums": [
+    {
+      "name": "Anfield",
+      "capacity": 54000,
+      "location": "Liverpool, UK"
+    },
+    {
+      "name": "Stamford Bridge",
+      "capacity": 42000,
+      "location": "London, UK"
+    }
+  ],
+  "matches": [
+    {
+      "date": "2024-10-01",
+      "opponent": "Manchester United",
+      "score": "3-1",
+      "stadiumId": "stadiumId_placeholder_1",
+      "goals": [
+        { "playerId": "playerId_placeholder_1", "minute": 23 },
+        { "playerId": "playerId_placeholder_2", "minute": 57 },
+        { "playerId": "playerId_placeholder_1", "minute": 78 }
+      ],
+      "lineup": {
+        "starting": ["playerId_placeholder_1", "playerId_placeholder_2", "playerId_placeholder_3"],
+        "substitutes": []
+      }
+    },
+    {
+      "date": "2024-10-15",
+      "opponent": "Chelsea",
+      "score": "2-2",
+      "stadiumId": "stadiumId_placeholder_2",
+      "goals": [
+        { "playerId": "playerId_placeholder_3", "minute": 15 },
+        { "playerId": "playerId_placeholder_1", "minute": 65 }
+      ],
+      "lineup": {
+        "starting": ["playerId_placeholder_1", "playerId_placeholder_2", "playerId_placeholder_3"],
+        "substitutes": []
+      }
+    }
+  ],
+  "managers": [
+    {
+      "name": "Jürgen Klopp",
+      "nationality": "Germany",
+      "dateOfBirth": "1967-06-16"
+    },
+    {
+      "name": "Thomas Tuchel",
+      "nationality": "Germany",
+      "dateOfBirth": "1973-08-29"
+    }
+  ],
+  "trophies": [
+    {
+      "name": "Premier League",
+      "topScorer": "playerId_placeholder_1",
+      "finalsWon": 2,
+      "seasons": [
+        { "year": 2019, "matchesWon": 30, "managerId": "managerId_placeholder_1" },
+        { "year": 2020, "matchesWon": 32, "managerId": "managerId_placeholder_1" }
+      ]
+    },
+    {
+      "name": "Champions League",
+      "topScorer": "playerId_placeholder_2",
+      "finalsWon": 1,
+      "seasons": [
+        { "year": 2018, "matchesWon": 12, "managerId": "managerId_placeholder_2" },
+        { "year": 2022, "matchesWon": 10, "managerId": "managerId_placeholder_2" }
+      ]
+    }
+  ]
+}

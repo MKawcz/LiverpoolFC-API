@@ -38,7 +38,7 @@ playersRouter.get('/:playerId', async (req, res) => {
 
 playersRouter.post(
     '/', 
-    validatePostPut(['name', 'position', 'nationality']),
+    validatePostPut(['name', 'position', 'nationality', 'stats', 'contract']),
     async (req, res) => {
         try {
             const newPlayer = new Player(req.body);
@@ -51,7 +51,7 @@ playersRouter.post(
 
 playersRouter.put(
     '/:playerId', 
-    validatePostPut(['name', 'position', 'nationality']),
+    validatePostPut(['name', 'position', 'nationality', 'stats', 'contract']),
     async (req, res) => {
         try {
             const player = await Player.findByIdAndUpdate(req.params.playerId, req.body, { new: true });
@@ -67,7 +67,7 @@ playersRouter.put(
 
 playersRouter.patch(
     '/:playerId',
-    validatePatch(['name', 'position', 'nationality']),
+    validatePatch(['name', 'position', 'nationality', 'stats', 'contract']),
     async (req, res) => {
         try {
             const player = await Player.findByIdAndUpdate(req.params.playerId, req.body, { new: true });
