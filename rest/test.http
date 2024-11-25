@@ -1,0 +1,326 @@
+### Players Router
+# Get all players
+GET http://localhost:8989/api/v1/players
+Content-Type: application/json
+
+# Get a player by ID
+GET http://localhost:8989/api/v1/players/{{playerId}}
+Content-Type: application/json
+
+# Create a new player
+POST http://localhost:8989/api/v1/players
+Content-Type: application/json
+
+{
+  "name": "New Player",
+  "position": "Midfielder",
+  "nationality": "France",
+  "stats": [],
+  "contractsHistory": []
+}
+
+# Update a player
+PUT http://localhost:8989/api/v1/players/{{playerId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Player",
+  "position": "Forward",
+  "nationality": "Spain"
+}
+
+# Partially update a player
+PATCH http://localhost:8989/api/v1/players/{{playerId}}
+Content-Type: application/json
+
+{
+  "position": "Goalkeeper"
+}
+
+# Delete a player
+DELETE http://localhost:8989/api/v1/players/{{playerId}}
+Content-Type: application/json
+
+### Matches Router
+# Get all matches
+GET http://localhost:8989/api/v1/matches
+Content-Type: application/json
+
+# Get a match by ID
+GET http://localhost:8989/api/v1/matches/{{matchId}}
+Content-Type: application/json
+
+# Create a new match
+POST http://localhost:8989/api/v1/matches
+Content-Type: application/json
+
+{
+  "date": "2023-12-01",
+  "opponent": "Arsenal",
+  "score": "2-1",
+  "stadium": "{{stadiumId}}",
+  "goals": [],
+  "lineup": { "starting": [], "substitutes": [] },
+  "season": "{{seasonId}}",
+  "competition": "{{competitionId}}"
+}
+
+# Update a match
+PUT http://localhost:8989/api/v1/matches/{{matchId}}
+Content-Type: application/json
+
+{
+  "opponent": "Updated Opponent",
+  "score": "3-2"
+}
+
+# Partially update a match
+PATCH http://localhost:8989/api/v1/matches/{{matchId}}
+Content-Type: application/json
+
+{
+  "score": "1-1"
+}
+
+# Delete a match
+DELETE http://localhost:8989/api/v1/matches/{{matchId}}
+Content-Type: application/json
+
+### Trophies Router
+# Get all trophies
+GET http://localhost:8989/api/v1/trophies
+Content-Type: application/json
+
+# Get a trophy by ID
+GET http://localhost:8989/api/v1/trophies/{{trophyId}}
+Content-Type: application/json
+
+# Create a new trophy
+POST http://localhost:8989/api/v1/trophies
+Content-Type: application/json
+
+{
+  "competition": "{{competitionId}}",
+  "finalsWon": 3,
+  "seasons": ["{{seasonId}}"]
+}
+
+# Update a trophy
+PUT http://localhost:8989/api/v1/trophies/{{trophyId}}
+Content-Type: application/json
+
+{
+  "finalsWon": 4
+}
+
+# Partially update a trophy
+PATCH http://localhost:8989/api/v1/trophies/{{trophyId}}
+Content-Type: application/json
+
+{
+  "finalsWon": 5
+}
+
+# Delete a trophy
+DELETE http://localhost:8989/api/v1/trophies/{{trophyId}}
+Content-Type: application/json
+
+### Stadiums Router
+# Get all stadiums
+GET http://localhost:8989/api/v1/stadiums
+Content-Type: application/json
+
+# Get a stadium by ID
+GET http://localhost:8989/api/v1/stadiums/{{stadiumId}}
+Content-Type: application/json
+
+# Create a new stadium
+POST http://localhost:8989/api/v1/stadiums
+Content-Type: application/json
+
+{
+  "name": "New Stadium",
+  "capacity": 60000,
+  "location": "London, UK"
+}
+
+# Update a stadium
+PUT http://localhost:8989/api/v1/stadiums/{{stadiumId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Stadium"
+}
+
+# Partially update a stadium
+PATCH http://localhost:8989/api/v1/stadiums/{{stadiumId}}
+Content-Type: application/json
+
+{
+  "capacity": 65000
+}
+
+# Delete a stadium
+DELETE http://localhost:8989/api/v1/stadiums/{{stadiumId}}
+Content-Type: application/json
+
+### Managers Router
+# Get all managers
+GET http://localhost:8989/api/v1/managers
+Content-Type: application/json
+
+# Get a manager by ID
+GET http://localhost:8989/api/v1/managers/{{managerId}}
+Content-Type: application/json
+
+# Create a new manager
+POST http://localhost:8989/api/v1/managers
+Content-Type: application/json
+
+{
+  "name": "New Manager",
+  "nationality": "Italy",
+  "dateOfBirth": "1975-03-20"
+}
+
+# Update a manager
+PUT http://localhost:8989/api/v1/managers/{{managerId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Manager"
+}
+
+# Partially update a manager
+PATCH http://localhost:8989/api/v1/managers/{{managerId}}
+Content-Type: application/json
+
+{
+  "nationality": "France"
+}
+
+# Delete a manager
+DELETE http://localhost:8989/api/v1/managers/{{managerId}}
+Content-Type: application/json
+
+### Contracts Router
+# Get all contracts
+GET http://localhost:8989/api/v1/contracts
+Content-Type: application/json
+
+# Get a contract by ID
+GET http://localhost:8989/api/v1/contracts/{{contractId}}
+Content-Type: application/json
+
+# Create a new contract
+POST http://localhost:8989/api/v1/contracts
+Content-Type: application/json
+
+{
+  "start": "2023-01-01",
+  "end": "2025-12-31",
+  "salary": 100000,
+  "bonuses": { "goal": 3000, "assist": 1500, "cleanSheet": 2000 },
+  "seasons": ["{{seasonId}}"]
+}
+
+# Update a contract
+PUT http://localhost:8989/api/v1/contracts/{{contractId}}
+Content-Type: application/json
+
+{
+  "salary": 120000
+}
+
+# Partially update a contract
+PATCH http://localhost:8989/api/v1/contracts/{{contractId}}
+Content-Type: application/json
+
+{
+  "salary": 125000
+}
+
+# Delete a contract
+DELETE http://localhost:8989/api/v1/contracts/{{contractId}}
+Content-Type: application/json
+
+### Competitions Router
+# Get all competitions
+GET http://localhost:8989/api/v1/competitions
+Content-Type: application/json
+
+# Get a competition by ID
+GET http://localhost:8989/api/v1/competitions/{{competitionId}}
+Content-Type: application/json
+
+# Create a new competition
+POST http://localhost:8989/api/v1/competitions
+Content-Type: application/json
+
+{
+  "name": "New Competition",
+  "yearOfCreation": 2000,
+  "bonusForWinning": 1000000
+}
+
+# Update a competition
+PUT http://localhost:8989/api/v1/competitions/{{competitionId}}
+Content-Type: application/json
+
+{
+  "bonusForWinning": 1200000
+}
+
+# Partially update a competition
+PATCH http://localhost:8989/api/v1/competitions/{{competitionId}}
+Content-Type: application/json
+
+{
+  "bonusForWinning": 1500000
+}
+
+# Delete a competition
+DELETE http://localhost:8989/api/v1/competitions/{{competitionId}}
+Content-Type: application/json
+
+### Seasons Router
+# Get all seasons
+GET http://localhost:8989/api/v1/seasons
+Content-Type: application/json
+
+# Get a season by ID
+GET http://localhost:8989/api/v1/seasons/{{seasonId}}
+Content-Type: application/json
+
+# Create a new season
+POST http://localhost:8989/api/v1/seasons
+Content-Type: application/json
+
+{
+  "years": "2023-2024",
+  "matchesWon": 20,
+  "matchesLost": 5,
+  "matchesDrawn": 3,
+  "topScorer": "{{playerId}}",
+  "manager": "{{managerId}}"
+}
+
+# Update a season
+PUT http://localhost:8989/api/v1/seasons/{{seasonId}}
+Content-Type: application/json
+
+{
+  "matchesWon": 22
+}
+
+# Partially update a season
+PATCH http://localhost:8989/api/v1/seasons/{{seasonId}}
+Content-Type: application/json
+
+{
+  "matchesLost": 6
+}
+
+# Delete a season
+DELETE http://localhost:8989/api/v1/seasons/{{seasonId}}
+Content-Type: application/json

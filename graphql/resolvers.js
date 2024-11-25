@@ -1,9 +1,9 @@
 import { GraphQLDateTime } from 'graphql-scalars';
-import { Player } from '../models/Player.js';
-import { Match } from '../models/Match.js';
-import { Trophy } from '../models/Trophy.js';
-import { Manager } from '../models/Manager.js';
-import { Stadium } from '../models/Stadium.js';
+import { Player } from '../rest/models/Player.js';
+import { Match } from '../rest/models/Match.js';
+import { Trophy } from '../rest/models/Trophy.js';
+import { Manager } from '../rest/models/Manager.js';
+import { Stadium } from '../rest/models/Stadium.js';
 
 export const resolvers = {
     DateTime: GraphQLDateTime,

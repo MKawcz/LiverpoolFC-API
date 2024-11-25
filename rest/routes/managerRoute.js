@@ -1,6 +1,6 @@
 import express from 'express';
 import { Manager } from '../models/Manager.js';
-import { validatePostPut, validatePatch } from '../validation.js';
+import { validateObjectId } from '../middleware/validators.js';
 
 export const managersRouter = express.Router();
 
@@ -18,7 +18,7 @@ managersRouter.get('/', async (req, res) => {
     }
 });
 
-managersRouter.get('/:managerId', async (req, res) => {
+managersRouter.get('/:managerId', validateObjectId('managerId'), async (req, res) => {
     try {
         const manager = await Manager.findById(req.params.managerId).select('name nationality dateOfBirth');
         if (!manager) return res.status(404).json({ message: 'Manager not found' });
@@ -37,7 +37,6 @@ managersRouter.get('/:managerId', async (req, res) => {
 
 managersRouter.post(
     '/',
-    validatePostPut(['name', 'nationality', 'dateOfBirth']),
     async (req, res) => {
         try {
             const newManager = new Manager(req.body);
@@ -58,7 +57,7 @@ managersRouter.post(
 
 managersRouter.put(
     '/:managerId',
-    validatePostPut(['name', 'nationality', 'dateOfBirth']),
+    validateObjectId('managerId'),
     async (req, res) => {
         try {
             const manager = await Manager.findByIdAndUpdate(req.params.managerId, req.body, {
@@ -83,7 +82,7 @@ managersRouter.put(
 
 managersRouter.patch(
     '/:managerId',
-    validatePatch(['name', 'nationality', 'dateOfBirth']),
+    validateObjectId('managerId'),
     async (req, res) => {
         try {
             const manager = await Manager.findByIdAndUpdate(req.params.managerId, req.body, {
@@ -106,7 +105,9 @@ managersRouter.patch(
     }
 );
 
-managersRouter.delete('/:managerId', async (req, res) => {
+managersRouter.delete('/:managerId',
+    validateObjectId('managerId'),
+    async (req, res) => {
     try {
         const manager = await Manager.findByIdAndDelete(req.params.managerId);
         if (!manager) return res.status(404).json({ message: 'Manager not found' });

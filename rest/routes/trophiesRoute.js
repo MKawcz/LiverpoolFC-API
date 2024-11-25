@@ -1,12 +1,12 @@
 import express from 'express';
 import { Trophy } from '../models/Trophy.js';
-import { validatePostPut, validatePatch } from '../validation.js';
+import {validateObjectId} from "../middleware/validators.js";
 
 export const trophiesRouter = express.Router();
 
 trophiesRouter.get('/', async (req, res) => {
     try {
-        const trophies = await Trophy.find().select('name finalsWon');
+        const trophies = await Trophy.find().select('finalsWon');
         res.status(200).json({
             data: trophies,
             links: { self: '/api/v1/trophies' },
@@ -16,9 +16,11 @@ trophiesRouter.get('/', async (req, res) => {
     }
 });
 
-trophiesRouter.get('/:trophyId', async (req, res) => {
+trophiesRouter.get('/:trophyId',
+    validateObjectId('trophyId'),
+    async (req, res) => {
     try {
-        const trophy = await Trophy.findById(req.params.trophyId).select('name finalsWon');
+        const trophy = await Trophy.findById(req.params.trophyId).select('finalsWon');
         if (trophy) {
             res.status(200).json({
                 data: trophy,
@@ -36,8 +38,7 @@ trophiesRouter.get('/:trophyId', async (req, res) => {
 });
 
 trophiesRouter.post(
-    '/', 
-    validatePostPut(['name', 'finalsWon']),
+    '/',
     async (req, res) => {
         try {
             const newTrophy = new Trophy(req.body);
@@ -49,8 +50,8 @@ trophiesRouter.post(
 });
 
 trophiesRouter.put(
-    '/:trophyId', 
-    validatePostPut(['name', 'finalsWon']),
+    '/:trophyId',
+    validateObjectId('trophyId'),
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(req.params.trophyId, req.body, { new: true });
@@ -66,7 +67,7 @@ trophiesRouter.put(
 
 trophiesRouter.patch(
     '/:trophyId',
-    validatePatch(['name', 'finalsWon']),
+    validateObjectId('trophyId'),
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(req.params.trophyId, req.body, { new: true });
@@ -81,7 +82,9 @@ trophiesRouter.patch(
     }
 );
 
-trophiesRouter.delete('/:trophyId', async (req, res) => {
+trophiesRouter.delete('/:trophyId',
+    validateObjectId('trophyId'),
+    async (req, res) => {
     try {
         const trophy = await Trophy.findByIdAndDelete(req.params.trophyId);
         if (trophy) {
@@ -91,57 +94,5 @@ trophiesRouter.delete('/:trophyId', async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
-    }
-});
-
-
-trophiesRouter.get('/:trophyId/seasons/:seasonIndex', async (req, res) => {
-    try {
-        const trophy = await Trophy.findById(req.params.trophyId)
-            .populate('seasons.managerId', 'name nationality');
-        if (!trophy) return res.status(404).json({ message: 'Trophy not found' });
-
-        const season = trophy.seasons[req.params.seasonIndex];
-        if (!season) return res.status(404).json({ message: 'Season not found' });
-
-        res.status(200).json({
-            data: season,
-            links: {
-                self: `/api/v1/trophies/${req.params.trophyId}/seasons/${req.params.seasonIndex}`,
-                manager: `/api/v1/managers/${season.managerId}`,
-                trophy: `/api/v1/trophies/${req.params.trophyId}`,
-            },
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
-    }
-});
-
-
-trophiesRouter.post('/:trophyId/seasons', async (req, res) => {
-    try {
-        const trophy = await Trophy.findById(req.params.trophyId);
-        if (!trophy) {
-            return res.status(404).json({ message: 'Trophy not found' });
-        }
-        trophy.seasons.push(req.body);
-        await trophy.save();
-        res.status(201).json(trophy.seasons);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid data', error });
-    }
-});
-
-trophiesRouter.put('/:trophyId/seasons', async (req, res) => {
-    try {
-        const trophy = await Trophy.findById(req.params.trophyId);
-        if (!trophy) {
-            return res.status(404).json({ message: 'Trophy not found' });
-        }
-        trophy.seasons = req.body;
-        await trophy.save();
-        res.status(200).json(trophy.seasons);
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid data', error });
     }
 });

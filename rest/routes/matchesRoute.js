@@ -1,6 +1,6 @@
 import express from 'express';
 import { Match } from '../models/Match.js';
-import { validatePostPut, validatePatch } from '../validation.js';
+import {validateObjectId} from "../middleware/validators.js";
 
 export const matchesRouter = express.Router();
 
@@ -16,7 +16,9 @@ matchesRouter.get('/', async (req, res) => {
     }
 });
 
-matchesRouter.get('/:matchId', async (req, res) => {
+matchesRouter.get('/:matchId',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findById(req.params.matchId).select('date opponent score');
         if (match) {
@@ -39,7 +41,6 @@ matchesRouter.get('/:matchId', async (req, res) => {
 
 matchesRouter.post(
     '/',
-    validatePostPut(['date', 'opponent', 'score', 'stadiumId', 'goals', 'lineup']),
     async (req, res) => {
         try {
             const stadium = await Stadium.findById(req.body.stadiumId);
@@ -64,7 +65,7 @@ matchesRouter.post(
 
 matchesRouter.put(
     '/:matchId',
-    validatePostPut(['date', 'opponent', 'score', 'stadiumId', 'goals', 'lineup']),
+    validateObjectId('matchId'),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
@@ -80,7 +81,7 @@ matchesRouter.put(
 
 matchesRouter.patch(
     '/:matchId',
-    validatePatch(['date', 'opponent', 'score', 'stadiumId',  'goals', 'lineup']),
+    validateObjectId('matchId'),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(req.params.matchId, req.body, { new: true });
@@ -94,7 +95,9 @@ matchesRouter.patch(
     }
 );
 
-matchesRouter.delete('/:matchId', async (req, res) => {
+matchesRouter.delete('/:matchId',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findByIdAndDelete(req.params.matchId);
         if (match) {
@@ -107,7 +110,9 @@ matchesRouter.delete('/:matchId', async (req, res) => {
     }
 });
 
-matchesRouter.get('/:matchId/goals', async (req, res) => {
+matchesRouter.get('/:matchId/goals',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findById(req.params.matchId).select('goals');
         if (!match) {
@@ -125,7 +130,9 @@ matchesRouter.get('/:matchId/goals', async (req, res) => {
     }
 });
 
-matchesRouter.post('/:matchId/goals', async (req, res) => {
+matchesRouter.post('/:matchId/goals',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findById(req.params.matchId);
         if (!match) {
@@ -139,7 +146,9 @@ matchesRouter.post('/:matchId/goals', async (req, res) => {
     }
 });
 
-matchesRouter.get('/:matchId/lineup', async (req, res) => {
+matchesRouter.get('/:matchId/lineup',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findById(req.params.matchId).select('lineup');
         if (!match) {
@@ -157,7 +166,9 @@ matchesRouter.get('/:matchId/lineup', async (req, res) => {
     }
 });
 
-matchesRouter.put('/:matchId/lineup', async (req, res) => {
+matchesRouter.put('/:matchId/lineup',
+    validateObjectId('matchId'),
+    async (req, res) => {
     try {
         const match = await Match.findById(req.params.matchId);
         if (!match) {

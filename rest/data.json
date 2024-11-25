@@ -1,0 +1,156 @@
+{
+  "competitions": [
+    {
+      "name": "Premier League",
+      "yearOfCreation": 1992,
+      "bonusForWinning": 15000000
+    },
+    {
+      "name": "Champions League",
+      "yearOfCreation": 1955,
+      "bonusForWinning": 20000000
+    }
+  ],
+  "contracts": [
+    {
+      "start": "2017-07-01",
+      "end": "2025-06-30",
+      "salary": 200000,
+      "bonuses": { "goal": 5000, "assist": 2000, "cleanSheet": 3000 }
+    },
+    {
+      "start": "2018-01-01",
+      "end": "2025-06-30",
+      "salary": 180000,
+      "bonuses": { "goal": 4000, "assist": 1500, "cleanSheet": 2500 }
+    },
+    {
+      "start": "2009-07-01",
+      "end": "2024-06-30",
+      "salary": 150000,
+      "bonuses": { "goal": 3000, "assist": 1500, "cleanSheet": 2000 }
+    }
+  ],
+  "managers": [
+    {
+      "name": "Jürgen Klopp",
+      "nationality": "Germany",
+      "dateOfBirth": "1967-06-16"
+    },
+    {
+      "name": "Pep Guardiola",
+      "nationality": "Spain",
+      "dateOfBirth": "1971-01-18"
+    }
+  ],
+  "players": [
+    {
+      "name": "Mohamed Salah",
+      "position": "Forward",
+      "nationality": "Egypt",
+      "stats": [],
+      "contractsHistory": []
+    },
+    {
+      "name": "Virgil van Dijk",
+      "position": "Defender",
+      "nationality": "Netherlands",
+      "stats": [],
+      "contractsHistory": []
+    },
+    {
+      "name": "Jordan Henderson",
+      "position": "Midfielder",
+      "nationality": "England",
+      "stats": [],
+      "contractsHistory": []
+    }
+  ],
+  "playerStats": [
+    {
+      "appearances": 300,
+      "goals": 180,
+      "assists": 75,
+      "yellowCards": 10,
+      "redCards": 1
+    },
+    {
+      "appearances": 200,
+      "goals": 20,
+      "assists": 10,
+      "yellowCards": 5,
+      "redCards": 0
+    },
+    {
+      "appearances": 350,
+      "goals": 50,
+      "assists": 100,
+      "yellowCards": 15,
+      "redCards": 2
+    }
+  ],
+  "stadiums": [
+    {
+      "name": "Anfield",
+      "capacity": 54000,
+      "location": "Liverpool, UK"
+    },
+    {
+      "name": "Etihad Stadium",
+      "capacity": 55017,
+      "location": "Manchester, UK"
+    }
+  ],
+  "seasons": [
+    {
+      "years": "2019-2020",
+      "matchesWon": 30,
+      "matchesLost": 3,
+      "matchesDrawn": 5,
+      "topScorer": null,
+      "manager": null
+    },
+    {
+      "years": "2020-2021",
+      "matchesWon": 28,
+      "matchesLost": 4,
+      "matchesDrawn": 6,
+      "topScorer": null,
+      "manager": null
+    }
+  ],
+  "matches": [
+    {
+      "date": "2023-12-01",
+      "opponent": "Manchester United",
+      "score": "3-1",
+      "stadium": null,
+      "goals": [],
+      "lineup": { "starting": [], "substitutes": [] },
+      "season": null,
+      "competition": null
+    },
+    {
+      "date": "2024-01-15",
+      "opponent": "Chelsea",
+      "score": "2-2",
+      "stadium": null,
+      "goals": [],
+      "lineup": { "starting": [], "substitutes": [] },
+      "season": null,
+      "competition": null
+    }
+  ],
+  "trophies": [
+    {
+      "competition": null,
+      "finalsWon": 2,
+      "seasons": []
+    },
+    {
+      "competition": null,
+      "finalsWon": 1,
+      "seasons": []
+    }
+  ]
+}

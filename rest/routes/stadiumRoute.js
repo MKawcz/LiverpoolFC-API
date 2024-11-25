@@ -1,6 +1,6 @@
 import express from 'express';
 import { Stadium } from '../models/Stadium.js';
-import { validatePostPut, validatePatch } from '../validation.js';
+import {validateObjectId} from "../middleware/validators.js";
 
 export const stadiumsRouter = express.Router();
 
@@ -16,7 +16,9 @@ stadiumsRouter.get('/', async (req, res) => {
     }
 });
 
-stadiumsRouter.get('/:stadiumId', async (req, res) => {
+stadiumsRouter.get('/:stadiumId',
+    validateObjectId('stadiumId'),
+    async (req, res) => {
     try {
         const stadium = await Stadium.findById(req.params.stadiumId);
         if (!stadium) {
@@ -50,7 +52,7 @@ stadiumsRouter.post(
 
 stadiumsRouter.put(
     '/:stadiumId',
-    validatePostPut(['name', 'capacity', 'location']),
+    validateObjectId('stadiumId'),
     async (req, res) => {
         try {
             const stadium = await Stadium.findByIdAndUpdate(req.params.stadiumId, req.body, { new: true });
@@ -66,7 +68,7 @@ stadiumsRouter.put(
 
 stadiumsRouter.patch(
     '/:stadiumId',
-    validatePatch(['name', 'capacity', 'location']),
+    validateObjectId('stadiumId'),
     async (req, res) => {
         try {
             const stadium = await Stadium.findByIdAndUpdate(req.params.stadiumId, req.body, { new: true });
@@ -80,7 +82,9 @@ stadiumsRouter.patch(
     }
 );
 
-stadiumsRouter.delete('/:stadiumId', async (req, res) => {
+stadiumsRouter.delete('/:stadiumId',
+    validateObjectId('stadiumId'),
+    async (req, res) => {
     try {
         const stadium = await Stadium.findByIdAndDelete(req.params.stadiumId);
         if (!stadium) {
