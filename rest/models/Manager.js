@@ -1,18 +1,47 @@
 import mongoose from 'mongoose';
 
 const ManagerSchema = new mongoose.Schema({
-    name: { type: String, required: true, trim: true, minlength: 2, maxlength: 100  },
-    nationality: { type: String, required: true, trim: true, minlength: 2, maxlength: 100 },
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 2,
+        maxlength: 100
+    },
+    nationality: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 2,
+        maxlength: 100
+    },
     dateOfBirth: {
         type: Date,
         required: true,
         validate: {
-            validator: function (value) {
-                return value <= new Date();
+            validator: function(value) {
+                const age = (new Date().getFullYear() - value.getFullYear());
+                return age >= 18 && age <= 100;
             },
-            message: props => `Date of birth (${props.value}) cannot be in the future.`,
-        },
+            message: 'Manager must be between 18 and 100 years old'
+        }
     },
+    // licenses: [{
+    //     type: {
+    //         type: String,
+    //         required: true,
+    //         enum: ['UEFA_PRO', 'UEFA_A', 'UEFA_B', 'OTHER']
+    //     },
+    //     issueDate: { type: Date, required: true },
+    //     expiryDate: { type: Date }
+    // }],
+    status: {
+        type: String,
+        enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],
+        default: 'ACTIVE'
+    }
+}, {
+    timestamps: true
 });
 
 export const Manager = mongoose.model('Manager', ManagerSchema);
