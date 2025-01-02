@@ -11,8 +11,6 @@ const BonusSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    // condition: { type: String },
-    // maxPerSeason: { type: Number, min: 0 }
 }, { _id: false });
 
 const ContractSchema = new mongoose.Schema({

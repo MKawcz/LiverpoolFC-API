@@ -2,155 +2,311 @@
   "competitions": [
     {
       "name": "Premier League",
-      "yearOfCreation": 1992,
-      "bonusForWinning": 15000000
+      "type": "LEAGUE",
+      "yearOfCreation": 1992
+    },
+    {
+      "name": "FA Cup",
+      "type": "CUP",
+      "yearOfCreation": 1871
     },
     {
       "name": "Champions League",
-      "yearOfCreation": 1955,
-      "bonusForWinning": 20000000
-    }
-  ],
-  "contracts": [
-    {
-      "start": "2017-07-01",
-      "end": "2025-06-30",
-      "salary": 200000,
-      "bonuses": { "goal": 5000, "assist": 2000, "cleanSheet": 3000 }
-    },
-    {
-      "start": "2018-01-01",
-      "end": "2025-06-30",
-      "salary": 180000,
-      "bonuses": { "goal": 4000, "assist": 1500, "cleanSheet": 2500 }
-    },
-    {
-      "start": "2009-07-01",
-      "end": "2024-06-30",
-      "salary": 150000,
-      "bonuses": { "goal": 3000, "assist": 1500, "cleanSheet": 2000 }
+      "type": "CUP",
+      "yearOfCreation": 1955
     }
   ],
   "managers": [
     {
-      "name": "Jürgen Klopp",
-      "nationality": "Germany",
-      "dateOfBirth": "1967-06-16"
-    },
-    {
-      "name": "Pep Guardiola",
-      "nationality": "Spain",
-      "dateOfBirth": "1971-01-18"
-    }
-  ],
-  "players": [
-    {
-      "name": "Mohamed Salah",
-      "position": "Forward",
-      "nationality": "Egypt",
-      "stats": [],
-      "contractsHistory": []
-    },
-    {
-      "name": "Virgil van Dijk",
-      "position": "Defender",
+      "name": "Arne Slot",
       "nationality": "Netherlands",
-      "stats": [],
-      "contractsHistory": []
+      "dateOfBirth": "1971-01-18",
+      "status": "ACTIVE"
     },
     {
-      "name": "Jordan Henderson",
-      "position": "Midfielder",
-      "nationality": "England",
-      "stats": [],
-      "contractsHistory": []
-    }
-  ],
-  "playerStats": [
-    {
-      "appearances": 300,
-      "goals": 180,
-      "assists": 75,
-      "yellowCards": 10,
-      "redCards": 1
+      "name": "Jurgen Klopp",
+      "nationality": "German",
+      "dateOfBirth": "1967-06-16",
+      "status": "INACTIVE"
     },
     {
-      "appearances": 200,
-      "goals": 20,
-      "assists": 10,
-      "yellowCards": 5,
-      "redCards": 0
-    },
-    {
-      "appearances": 350,
-      "goals": 50,
-      "assists": 100,
-      "yellowCards": 15,
-      "redCards": 2
+      "name": "Brendan Rodgers",
+      "nationality": "English",
+      "dateOfBirth": "1982-03-26",
+      "status": "INACTIVE"
     }
   ],
   "stadiums": [
     {
+      "name": "Emirates Stadium",
+      "capacity": 60704,
+      "location": "London, England"
+    },
+    {
       "name": "Anfield",
-      "capacity": 54000,
-      "location": "Liverpool, UK"
+      "capacity": 53394,
+      "location": "Liverpool, England"
     },
     {
       "name": "Etihad Stadium",
-      "capacity": 55017,
-      "location": "Manchester, UK"
+      "capacity": 53400,
+      "location": "Manchester, England"
+    }
+  ],
+  "playerStats": [
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 0,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 35,
+      "minutesPlayed": 3150,
+      "goals": {
+        "total": 0,
+        "penalties": 0,
+        "freeKicks": 0
+      },
+      "assists": 0,
+      "tackles": 85,
+      "interceptions": 120,
+      "clearances": 200,
+      "cleanSheets": 15,
+      "saves": 125,
+      "cards": {
+        "yellow": 2,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 36,
+      "minutesPlayed": 3240,
+      "goals": {
+        "total": 15,
+        "penalties": 0,
+        "freeKicks": 2
+      },
+      "assists": 20,
+      "tackles": 45,
+      "interceptions": 30,
+      "clearances": 15,
+      "cleanSheets": 0,
+      "saves": 0,
+      "cards": {
+        "yellow": 3,
+        "red": 0
+      }
+    }
+  ],
+  "contracts": [
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 300000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 5000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3000
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2026-06-30",
+      "salary": {
+        "base": 250000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "CLEAN_SHEET",
+          "amount": 10000
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2028-06-30",
+      "salary": {
+        "base": 280000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 4000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 2500
+        }
+      ]
+    }
+  ],
+  "players": [
+    {
+      "name": {
+        "first": "Mohamed",
+        "last": "Salah",
+        "displayName": "Salah"
+      },
+      "position": "FWD",
+      "nationality": "Egyptian",
+      "dateOfBirth": "1992-06-15",
+      "height": 175,
+      "weight": 73,
+      "status": "ACTIVE",
+      "jerseyNumber": 11,
+      "marketValue": {
+        "value": 180000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Alisson",
+        "last": "Becker",
+        "displayName": "Alisson"
+      },
+      "position": "GK",
+      "nationality": "Brazilian",
+      "dateOfBirth": "1992-10-02",
+      "height": 191,
+      "weight": 91,
+      "status": "ACTIVE",
+      "jerseyNumber": 1,
+      "marketValue": {
+        "value": 35000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Virgil",
+        "last": "Van Dijk",
+        "displayName": "Van Dijk"
+      },
+      "position": "MID",
+      "nationality": "Netherlands",
+      "dateOfBirth": "2001-09-05",
+      "height": 178,
+      "weight": 72,
+      "status": "ACTIVE",
+      "jerseyNumber": 7,
+      "marketValue": {
+        "value": 120000000,
+        "currency": "EUR"
+      }
     }
   ],
   "seasons": [
     {
-      "years": "2019-2020",
-      "matchesWon": 30,
-      "matchesLost": 3,
-      "matchesDrawn": 5,
-      "topScorer": null,
-      "manager": null
+      "years": "2024-2025",
+      "status": "IN_PROGRESS",
+      "trophies": []
     },
     {
-      "years": "2020-2021",
-      "matchesWon": 28,
-      "matchesLost": 4,
-      "matchesDrawn": 6,
-      "topScorer": null,
-      "manager": null
+      "years": "2023-2024",
+      "status": "FINISHED",
+      "trophies": []
+    },
+    {
+      "years": "2022-2023",
+      "status": "FINISHED",
+      "trophies": []
     }
   ],
   "matches": [
     {
-      "date": "2023-12-01",
-      "opponent": "Manchester United",
-      "score": "3-1",
-      "stadium": null,
+      "date": "2023-12-31T15:00:00Z",
+      "opponent": {
+        "name": "Manchester United",
+        "manager": "Erik ten Hag"
+      },
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "lineup": {
+        "starting": [],
+        "substitutes": [],
+        "substitutions": []
+      },
       "goals": [],
-      "lineup": { "starting": [], "substitutes": [] },
-      "season": null,
-      "competition": null
+      "referee": {
+        "main": "Michael Oliver",
+        "assistants": ["Stuart Burt", "Simon Bennett"],
+        "fourth": "Anthony Taylor"
+      }
     },
     {
-      "date": "2024-01-15",
-      "opponent": "Chelsea",
-      "score": "2-2",
-      "stadium": null,
+      "date": "2023-12-24T15:00:00Z",
+      "opponent": {
+        "name": "Chelsea",
+        "manager": "Mauricio Pochettino"
+      },
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "lineup": {
+        "starting": [],
+        "substitutes": [],
+        "substitutions": []
+      },
       "goals": [],
-      "lineup": { "starting": [], "substitutes": [] },
-      "season": null,
-      "competition": null
+      "referee": {
+        "main": "Anthony Taylor",
+        "assistants": ["Gary Beswick", "Adam Nunn"],
+        "fourth": "Paul Tierney"
+      }
     }
   ],
   "trophies": [
     {
-      "competition": null,
-      "finalsWon": 2,
-      "seasons": []
+      "wonDate": "2023-05-28",
+      "prizes": {
+        "winner": 150000000,
+        "runnerUp": 75000000,
+        "thirdPlace": 50000000
+      }
     },
     {
-      "competition": null,
-      "finalsWon": 1,
-      "seasons": []
+      "wonDate": "2023-05-20",
+      "prizes": {
+        "winner": 100000000,
+        "runnerUp": 50000000,
+        "thirdPlace": 25000000
+      }
+    },
+    {
+      "wonDate": "2023-05-14",
+      "prizes": {
+        "winner": 2000000,
+        "runnerUp": 1000000,
+        "thirdPlace": 500000
+      }
     }
   ]
 }

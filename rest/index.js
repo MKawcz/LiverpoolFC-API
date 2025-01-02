@@ -1,7 +1,7 @@
 import express from 'express';
-import connectDB from '../config/db.js'
+import connectDB from './config/db.js'
 import cors from 'cors';
-import { swaggerSpec } from '../config/swagger.js';
+import { swaggerSpec } from './config/swagger.js';
 import swaggerUi from 'swagger-ui-express';
 import { addCustomHeaders } from './middleware/headers.js';
 
@@ -20,8 +20,7 @@ const app = express();
 // Dozwolone pochodzenie żądań
 const allowedOrigins = [
     'http://localhost:3000',
-    'http://localhost:8989',
-    'https://liverpoolfc.com'
+    'http://localhost:8989'
 ];
 
 app.use(cors({

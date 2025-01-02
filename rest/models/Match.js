@@ -102,7 +102,6 @@ const MatchSchema = new mongoose.Schema({
         assistants: [{ type: String }],
         fourth: { type: String }
     },
-    // attendance: { type: Number, min: 0 }
 }, {
     timestamps: true,
 });

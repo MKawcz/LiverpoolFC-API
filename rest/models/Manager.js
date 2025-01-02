@@ -26,15 +26,6 @@ const ManagerSchema = new mongoose.Schema({
             message: 'Manager must be between 18 and 100 years old'
         }
     },
-    // licenses: [{
-    //     type: {
-    //         type: String,
-    //         required: true,
-    //         enum: ['UEFA_PRO', 'UEFA_A', 'UEFA_B', 'OTHER']
-    //     },
-    //     issueDate: { type: Date, required: true },
-    //     expiryDate: { type: Date }
-    // }],
     status: {
         type: String,
         enum: ['ACTIVE', 'INACTIVE', 'SUSPENDED'],

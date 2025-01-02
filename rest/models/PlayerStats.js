@@ -19,17 +19,6 @@ const PlayerStatsSchema = new mongoose.Schema({
         freeKicks: { type: Number, default: 0, min: 0 }
     },
     assists: { type: Number, default: 0, min: 0 },
-    // passes: {
-    //     total: { type: Number, default: 0, min: 0 },
-    //     accurate: { type: Number, default: 0, min: 0 },
-    //     validate: {
-    //         validator: function(v) {
-    //             return this.passes.accurate <= this.passes.total;
-    //         },
-    //         message: 'Accurate passes cannot exceed total passes'
-    //     }
-    // },
-    // keyPasses: { type: Number, default: 0, min: 0 },
     tackles: { type: Number, default: 0, min: 0 },
     interceptions: { type: Number, default: 0, min: 0 },
     clearances: { type: Number, default: 0, min: 0 },

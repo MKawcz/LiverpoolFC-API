@@ -1,3 +1,44 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Stadium:
+ *       type: object
+ *       required:
+ *         - name
+ *         - capacity
+ *         - location
+ *       properties:
+ *         name:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Stadium name (must be unique)
+ *         capacity:
+ *           type: number
+ *           minimum: 100
+ *           description: Stadium capacity (minimum 100 seats)
+ *         location:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Stadium location
+ *
+ *   responses:
+ *     StadiumResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Stadium'
+ *         _links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *             collection:
+ *               type: string
+ */
+
 import express from 'express';
 import { Stadium } from '../models/Stadium.js';
 import { validateObjectId, validateAllowedFields } from '../middleware/validators.js';
@@ -7,7 +48,34 @@ export const stadiumsRouter = express.Router();
 // Definiujemy dozwolone pola dla stadionu
 const ALLOWED_FIELDS = ['name', 'capacity', 'location'];
 
-// GET /api/v1/stadiums
+/**
+ * @swagger
+ * /stadiums:
+ *   get:
+ *     summary: Get all stadiums
+ *     tags: [Stadiums]
+ *     responses:
+ *       200:
+ *         description: List of stadiums
+ *         headers:
+ *           X-Total-Count:
+ *             description: Total number of stadiums
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Stadium'
+ *       204:
+ *         description: No stadiums found
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.get('/', async (req, res) => {
     try {
         const stadiums = await Stadium.find();
@@ -38,7 +106,33 @@ stadiumsRouter.get('/', async (req, res) => {
     }
 });
 
-// GET /api/v1/stadiums/:stadiumId
+/**
+ * @swagger
+ * /stadiums/{id}:
+ *   get:
+ *     summary: Get stadium by ID
+ *     tags: [Stadiums]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stadium ID
+ *     responses:
+ *       200:
+ *         description: Stadium found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/StadiumResponse'
+ *       304:
+ *         description: Not modified (ETag matched)
+ *       404:
+ *         description: Stadium not found
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.get('/:stadiumId',
     validateObjectId('stadiumId'),
     async (req, res) => {
@@ -77,7 +171,37 @@ stadiumsRouter.get('/:stadiumId',
         }
 });
 
-// POST /api/v1/stadiums
+/**
+ * @swagger
+ * /stadiums:
+ *   post:
+ *     summary: Create new stadium
+ *     tags: [Stadiums]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Stadium'
+ *     responses:
+ *       201:
+ *         description: Stadium created
+ *         headers:
+ *           Location:
+ *             description: URL of created stadium
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/StadiumResponse'
+ *       400:
+ *         description: Validation error
+ *       409:
+ *         description: Stadium with this name already exists
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
@@ -119,7 +243,41 @@ stadiumsRouter.post('/',
         }
 });
 
-// PUT /api/v1/stadiums/:stadiumId
+/**
+ * @swagger
+ * /stadiums/{id}:
+ *   put:
+ *     summary: Update stadium
+ *     tags: [Stadiums]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stadium ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Stadium'
+ *     responses:
+ *       200:
+ *         description: Stadium updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/StadiumResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Stadium not found
+ *       409:
+ *         description: Stadium with this name already exists
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.put('/:stadiumId',
     validateObjectId('stadiumId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -172,7 +330,53 @@ stadiumsRouter.put('/:stadiumId',
         }
 });
 
-// PATCH /api/v1/stadiums/:stadiumId
+/**
+ * @swagger
+ * /stadiums/{id}:
+ *   patch:
+ *     summary: Partially update stadium
+ *     tags: [Stadiums]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stadium ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *               capacity:
+ *                 type: number
+ *                 minimum: 100
+ *               location:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *     responses:
+ *       200:
+ *         description: Stadium updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/StadiumResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Stadium not found
+ *       409:
+ *         description: Stadium with this name already exists
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.patch('/:stadiumId',
     validateObjectId('stadiumId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -225,7 +429,27 @@ stadiumsRouter.patch('/:stadiumId',
         }
 });
 
-// DELETE /api/v1/stadiums/:stadiumId
+/**
+ * @swagger
+ * /stadiums/{id}:
+ *   delete:
+ *     summary: Delete stadium
+ *     tags: [Stadiums]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Stadium ID
+ *     responses:
+ *       204:
+ *         description: Stadium deleted
+ *       404:
+ *         description: Stadium not found
+ *       500:
+ *         description: Server error
+ */
 stadiumsRouter.delete('/:stadiumId',
     validateObjectId('stadiumId'),
     async (req, res) => {

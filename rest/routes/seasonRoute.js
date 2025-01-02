@@ -1,81 +1,97 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Season:
+ *       type: object
+ *       required:
+ *         - years
+ *         - manager
+ *         - status
+ *       properties:
+ *         years:
+ *           type: string
+ *           pattern: ^\d{4}-\d{4}$
+ *           description: Season years in format YYYY-YYYY (must be consecutive years)
+ *           example: "2023-2024"
+ *         trophies:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: objectId
+ *           description: Array of references to Trophy model
+ *         manager:
+ *           type: string
+ *           format: objectId
+ *           description: Reference to Manager model
+ *         status:
+ *           type: string
+ *           enum: [UPCOMING, IN_PROGRESS, FINISHED]
+ *           default: UPCOMING
+ *           description: Current status of the season
+ *
+ *   responses:
+ *     SeasonResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Season'
+ *         _links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *             collection:
+ *               type: string
+ *             manager:
+ *               type: string
+ *             trophies:
+ *               type: array
+ *               items:
+ *                 type: string
+ */
+
+
 import express from 'express';
 import { Season } from '../models/Season.js';
-import { Manager } from '../models/Manager.js';
-import { Trophy } from '../models/Trophy.js';
-import { Player } from '../models/Player.js';
-import { validateObjectId, validateAllowedFields } from '../middleware/validators.js';
+import { validateObjectId, validateAllowedFields, createReferenceValidator } from '../middleware/validators.js';
 
 export const seasonRouter = express.Router();
 
-// Definiujemy dozwolone pola, uwzględniając strukturę zagnieżdżoną
 const ALLOWED_FIELDS = [
     'years', 'status',
-    'statistics.matchesPlayed', 'statistics.matchesWon',
-    'statistics.matchesDrawn', 'statistics.matchesLost',
-    'statistics.goalsFor', 'statistics.goalsAgainst',
-    'statistics.cleanSheets', 'statistics.points',
     'trophies', 'manager',
-    'topScorer.player', 'topScorer.goals',
-    'topAssister.player', 'topAssister.assists'
 ];
+const validateSeasonReferences = createReferenceValidator('Season');
 
-// Middleware do walidacji referencji
-const validateReferences = async (req, res, next) => {
-    try {
-        // Sprawdzamy referencje tylko jeśli zostały przesłane
-        const checks = [];
-
-        // Walidacja managera
-        if (req.body.manager) {
-            const managerExists = await Manager.findById(req.body.manager);
-            if (!managerExists) {
-                return res.status(400).json({
-                    error: 'Invalid Reference',
-                    message: 'Manager does not exist',
-                    _links: { collection: '/api/v1/seasons' }
-                });
-            }
-        }
-
-        // Walidacja trofeów
-        if (req.body.trophies?.length > 0) {
-            const trophiesCount = await Trophy.countDocuments({
-                _id: { $in: req.body.trophies }
-            });
-            if (trophiesCount !== req.body.trophies.length) {
-                return res.status(400).json({
-                    error: 'Invalid Reference',
-                    message: 'One or more trophies do not exist',
-                    _links: { collection: '/api/v1/seasons' }
-                });
-            }
-        }
-
-        // Walidacja zawodników (topScorer i topAssister)
-        const playerIds = [];
-        if (req.body.topScorer?.player) playerIds.push(req.body.topScorer.player);
-        if (req.body.topAssister?.player) playerIds.push(req.body.topAssister.player);
-
-        if (playerIds.length > 0) {
-            const playersCount = await Player.countDocuments({
-                _id: { $in: playerIds }
-            });
-            if (playersCount !== playerIds.length) {
-                return res.status(400).json({
-                    error: 'Invalid Reference',
-                    message: 'One or more players do not exist',
-                    _links: { collection: '/api/v1/seasons' }
-                });
-            }
-        }
-
-        next();
-    } catch (error) {
-        next(error);
-    }
-};
-
-// GET /api/v1/seasons
+/**
+ * @swagger
+ * /seasons:
+ *   get:
+ *     summary: Get all seasons
+ *     tags: [Seasons]
+ *     responses:
+ *       200:
+ *         description: List of seasons
+ *         headers:
+ *           X-Total-Count:
+ *             description: Total number of seasons
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Season'
+ *       204:
+ *         description: No seasons found
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.get('/', async (req, res) => {
     try {
         const seasons = await Season.find()
@@ -117,7 +133,33 @@ seasonRouter.get('/', async (req, res) => {
     }
 });
 
-// GET /api/v1/seasons/:seasonId
+/**
+ * @swagger
+ * /seasons/{id}:
+ *   get:
+ *     summary: Get season by ID
+ *     tags: [Seasons]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Season ID
+ *     responses:
+ *       200:
+ *         description: Season found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/SeasonResponse'
+ *       304:
+ *         description: Not modified (ETag matched)
+ *       404:
+ *         description: Season not found
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.get('/:seasonId',
     validateObjectId('seasonId'),
     async (req, res) => {
@@ -164,10 +206,40 @@ seasonRouter.get('/:seasonId',
         }
 });
 
-// POST /api/v1/seasons
+/**
+ * @swagger
+ * /seasons:
+ *   post:
+ *     summary: Create new season
+ *     tags: [Seasons]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Season'
+ *     responses:
+ *       201:
+ *         description: Season created
+ *         headers:
+ *           Location:
+ *             description: URL of created season
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/SeasonResponse'
+ *       400:
+ *         description: Validation error
+ *       409:
+ *         description: Season with these years already exists
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validateReferences,
+    validateSeasonReferences,
     async (req, res) => {
         try {
             const newSeason = new Season(req.body);
@@ -211,11 +283,45 @@ seasonRouter.post('/',
         }
 });
 
-// PUT /api/v1/seasons/:seasonId
+/**
+ * @swagger
+ * /seasons/{id}:
+ *   put:
+ *     summary: Update season
+ *     tags: [Seasons]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Season ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Season'
+ *     responses:
+ *       200:
+ *         description: Season updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/SeasonResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Season not found
+ *       409:
+ *         description: Season with these years already exists
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.put('/:seasonId',
     validateObjectId('seasonId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateReferences,
+    validateSeasonReferences,
     async (req, res) => {
         try {
             const season = await Season.findByIdAndUpdate(
@@ -273,11 +379,60 @@ seasonRouter.put('/:seasonId',
         }
 });
 
-// PATCH /api/v1/seasons/:seasonId
+/**
+ * @swagger
+ * /seasons/{id}:
+ *   patch:
+ *     summary: Partially update season
+ *     tags: [Seasons]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Season ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               years:
+ *                 type: string
+ *                 pattern: ^\d{4}-\d{4}$
+ *               trophies:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: objectId
+ *               manager:
+ *                 type: string
+ *                 format: objectId
+ *               status:
+ *                 type: string
+ *                 enum: [UPCOMING, IN_PROGRESS, FINISHED]
+ *     responses:
+ *       200:
+ *         description: Season updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/SeasonResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Season not found
+ *       409:
+ *         description: Season with these years already exists
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.patch('/:seasonId',
     validateObjectId('seasonId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateReferences,
+    validateSeasonReferences,
     async (req, res) => {
         try {
             const season = await Season.findByIdAndUpdate(
@@ -335,7 +490,27 @@ seasonRouter.patch('/:seasonId',
         }
 });
 
-// DELETE /api/v1/seasons/:seasonId
+/**
+ * @swagger
+ * /seasons/{id}:
+ *   delete:
+ *     summary: Delete season
+ *     tags: [Seasons]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Season ID
+ *     responses:
+ *       204:
+ *         description: Season deleted
+ *       404:
+ *         description: Season not found
+ *       500:
+ *         description: Server error
+ */
 seasonRouter.delete('/:seasonId',
     validateObjectId('seasonId'),
     async (req, res) => {

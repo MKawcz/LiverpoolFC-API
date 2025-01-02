@@ -1,37 +1,100 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Prizes:
+ *       type: object
+ *       required:
+ *         - winner
+ *       properties:
+ *         winner:
+ *           type: number
+ *           minimum: 0
+ *           description: Prize money for winner
+ *         runnerUp:
+ *           type: number
+ *           minimum: 0
+ *           description: Prize money for runner-up (optional)
+ *         thirdPlace:
+ *           type: number
+ *           minimum: 0
+ *           description: Prize money for third place (optional)
+ *
+ *     Trophy:
+ *       type: object
+ *       required:
+ *         - competition
+ *         - wonDate
+ *         - prizes
+ *       properties:
+ *         competition:
+ *           type: string
+ *           format: objectId
+ *           description: Reference to Competition model
+ *         wonDate:
+ *           type: string
+ *           format: date-time
+ *           description: Date when trophy was won (cannot be in future)
+ *         prizes:
+ *           $ref: '#/components/schemas/Prizes'
+ *
+ *   responses:
+ *     TrophyResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Trophy'
+ *         _links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *             collection:
+ *               type: string
+ *             competition:
+ *               type: string
+ */
+
 import express from 'express';
 import { Trophy } from '../models/Trophy.js';
-import { Competition } from '../models/Competition.js';
-import { validateObjectId, validateAllowedFields } from '../middleware/validators.js';
+import { validateObjectId, validateAllowedFields, createReferenceValidator } from '../middleware/validators.js';
 
 export const trophiesRouter = express.Router();
 
-// Definiujemy dozwolone pola, uwzględniając strukturę zagnieżdżoną
 const ALLOWED_FIELDS = [
     'competition', 'wonDate',
-    'prizes.winner', 'prizes.runnerUp', 'prizes.thirdPlace',
-    'bonuses.forWinning', 'bonuses.forDrawing', 'bonuses.forCleanSheet'
+    'prizes.winner', 'prizes.runnerUp', 'prizes.thirdPlace'
 ];
+const validateTrophyReferences = createReferenceValidator('Trophy');
 
-// Middleware do walidacji referencji konkurencji
-const validateCompetitionReference = async (req, res, next) => {
-    try {
-        if (req.body.competition) {
-            const competitionExists = await Competition.findById(req.body.competition);
-            if (!competitionExists) {
-                return res.status(400).json({
-                    error: 'Invalid Reference',
-                    message: 'Competition does not exist',
-                    _links: { collection: '/api/v1/trophies' }
-                });
-            }
-        }
-        next();
-    } catch (error) {
-        next(error);
-    }
-};
-
-// GET /api/v1/trophies
+/**
+ * @swagger
+ * /trophies:
+ *   get:
+ *     summary: Get all trophies
+ *     tags: [Trophies]
+ *     responses:
+ *       200:
+ *         description: List of trophies
+ *         headers:
+ *           X-Total-Count:
+ *             description: Total number of trophies
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Trophy'
+ *       204:
+ *         description: No trophies found
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.get('/', async (req, res) => {
     try {
         const trophies = await Trophy.find()
@@ -64,7 +127,33 @@ trophiesRouter.get('/', async (req, res) => {
     }
 });
 
-// GET /api/v1/trophies/:trophyId
+/**
+ * @swagger
+ * /trophies/{id}:
+ *   get:
+ *     summary: Get trophy by ID
+ *     tags: [Trophies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Trophy ID
+ *     responses:
+ *       200:
+ *         description: Trophy found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/TrophyResponse'
+ *       304:
+ *         description: Not modified (ETag matched)
+ *       404:
+ *         description: Trophy not found
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.get('/:trophyId',
     validateObjectId('trophyId'),
     async (req, res) => {
@@ -105,10 +194,38 @@ trophiesRouter.get('/:trophyId',
         }
 });
 
-// POST /api/v1/trophies
+/**
+ * @swagger
+ * /trophies:
+ *   post:
+ *     summary: Create new trophy
+ *     tags: [Trophies]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Trophy'
+ *     responses:
+ *       201:
+ *         description: Trophy created
+ *         headers:
+ *           Location:
+ *             description: URL of created trophy
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/TrophyResponse'
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validateCompetitionReference,
+    validateTrophyReferences,
     async (req, res) => {
         try {
             const newTrophy = new Trophy(req.body);
@@ -142,11 +259,43 @@ trophiesRouter.post('/',
         }
 });
 
-// PUT /api/v1/trophies/:trophyId
+/**
+ * @swagger
+ * /trophies/{id}:
+ *   put:
+ *     summary: Update trophy
+ *     tags: [Trophies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Trophy ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Trophy'
+ *     responses:
+ *       200:
+ *         description: Trophy updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/TrophyResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Trophy not found
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.put('/:trophyId',
     validateObjectId('trophyId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateCompetitionReference,
+    validateTrophyReferences,
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(
@@ -190,11 +339,62 @@ trophiesRouter.put('/:trophyId',
         }
 });
 
-// PATCH /api/v1/trophies/:trophyId
+/**
+ * @swagger
+ * /trophies/{id}:
+ *   patch:
+ *     summary: Partially update trophy
+ *     tags: [Trophies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Trophy ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               competition:
+ *                 type: string
+ *                 format: objectId
+ *               wonDate:
+ *                 type: string
+ *                 format: date-time
+ *               prizes:
+ *                 type: object
+ *                 properties:
+ *                   winner:
+ *                     type: number
+ *                     minimum: 0
+ *                   runnerUp:
+ *                     type: number
+ *                     minimum: 0
+ *                   thirdPlace:
+ *                     type: number
+ *                     minimum: 0
+ *     responses:
+ *       200:
+ *         description: Trophy updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/TrophyResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Trophy not found
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.patch('/:trophyId',
     validateObjectId('trophyId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateCompetitionReference,
+    validateTrophyReferences,
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(
@@ -238,7 +438,27 @@ trophiesRouter.patch('/:trophyId',
         }
 });
 
-// DELETE /api/v1/trophies/:trophyId
+/**
+ * @swagger
+ * /trophies/{id}:
+ *   delete:
+ *     summary: Delete trophy
+ *     tags: [Trophies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Trophy ID
+ *     responses:
+ *       204:
+ *         description: Trophy deleted
+ *       404:
+ *         description: Trophy not found
+ *       500:
+ *         description: Server error
+ */
 trophiesRouter.delete('/:trophyId',
     validateObjectId('trophyId'),
     async (req, res) => {

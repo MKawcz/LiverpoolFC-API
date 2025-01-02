@@ -1,28 +1,5 @@
 import mongoose from 'mongoose';
 
-// const AttributesSchema = new mongoose.Schema({
-//     technical: {
-//         pace: { type: Number, min: 1, max: 99 },
-//         shooting: { type: Number, min: 1, max: 99 },
-//         passing: { type: Number, min: 1, max: 99 },
-//         dribbling: { type: Number, min: 1, max: 99 },
-//         defending: { type: Number, min: 1, max: 99 },
-//         physical: { type: Number, min: 1, max: 99 }
-//     },
-//     mental: {
-//         vision: { type: Number, min: 1, max: 99 },
-//         composure: { type: Number, min: 1, max: 99 },
-//         leadership: { type: Number, min: 1, max: 99 },
-//         workRate: { type: Number, min: 1, max: 99 }
-//     },
-//     goalkeeper: {
-//         handling: { type: Number, min: 1, max: 99 },
-//         reflexes: { type: Number, min: 1, max: 99 },
-//         positioning: { type: Number, min: 1, max: 99 },
-//         kicking: { type: Number, min: 1, max: 99 }
-//     }
-// }, { _id: false });
-
 const PlayerSchema = new mongoose.Schema({
     name: {
         first: { type: String, required: true, trim: true, minlength: 2, maxlength: 50 },
@@ -54,7 +31,6 @@ const PlayerSchema = new mongoose.Schema({
     },
     height: { type: Number, min: 150, max: 220 },
     weight: { type: Number, min: 50, max: 120 },
-    // attributes: AttributesSchema,
     status: {
         type: String,
         enum: ['ACTIVE', 'INJURED', 'SUSPENDED', 'ON_LOAN', 'INACTIVE'],

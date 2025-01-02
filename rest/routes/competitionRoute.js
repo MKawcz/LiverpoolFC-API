@@ -1,3 +1,42 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Competition:
+ *       type: object
+ *       required:
+ *         - name
+ *         - type
+ *         - yearOfCreation
+ *       properties:
+ *         name:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Competition name (must be unique)
+ *         type:
+ *           type: string
+ *           enum: [LEAGUE, CUP, FRIENDLY]
+ *           description: Competition type
+ *         yearOfCreation:
+ *           type: number
+ *           minimum: 1800
+ *           description: Year when competition was created (cannot be in future)
+ *   responses:
+ *     CompetitionResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Competition'
+ *         _links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *             collection:
+ *               type: string
+ */
+
 import express from 'express';
 import { Competition } from '../models/Competition.js';
 import { validateObjectId, validateAllowedFields } from '../middleware/validators.js';
@@ -6,7 +45,34 @@ export const competitionRouter = express.Router();
 
 const ALLOWED_FIELDS = ['name', 'type', 'yearOfCreation'];
 
-// GET /api/v1/competitions
+/**
+ * @swagger
+ * /competitions:
+ *   get:
+ *     summary: Get all competitions
+ *     tags: [Competitions]
+ *     responses:
+ *       200:
+ *         description: List of competitions
+ *         headers:
+ *           X-Total-Count:
+ *             description: Total number of competitions
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Competition'
+ *       204:
+ *         description: No competitions found
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.get('/', async (req, res) => {
     try {
         const competitions = await Competition.find();
@@ -40,7 +106,33 @@ competitionRouter.get('/', async (req, res) => {
     }
 });
 
-// GET /api/v1/competitions/:competitionId
+/**
+ * @swagger
+ * /competitions/{id}:
+ *   get:
+ *     summary: Get competition by ID
+ *     tags: [Competitions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Competition ID
+ *     responses:
+ *       200:
+ *         description: Competition found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/CompetitionResponse'
+ *       304:
+ *         description: Not modified (ETag matched)
+ *       404:
+ *         description: Competition not found
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.get('/:competitionId', validateObjectId('competitionId'), async (req, res) => {
     try {
         const competition = await Competition.findById(req.params.competitionId);
@@ -78,7 +170,35 @@ competitionRouter.get('/:competitionId', validateObjectId('competitionId'), asyn
     }
 });
 
-// POST /api/v1/competitions
+/**
+ * @swagger
+ * /competitions:
+ *   post:
+ *     summary: Create new competition
+ *     tags: [Competitions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Competition'
+ *     responses:
+ *       201:
+ *         description: Competition created
+ *         headers:
+ *           Location:
+ *             description: URL of created competition
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/CompetitionResponse'
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.post(
     '/',
     validateAllowedFields(ALLOWED_FIELDS),
@@ -115,7 +235,39 @@ competitionRouter.post(
         }
 });
 
-// PUT /api/v1/competitions/:competitionId
+/**
+ * @swagger
+ * /competitions/{id}:
+ *   put:
+ *     summary: Update competition
+ *     tags: [Competitions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Competition ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Competition'
+ *     responses:
+ *       200:
+ *         description: Competition updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/CompetitionResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Competition not found
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.put('/:competitionId',
     validateObjectId('competitionId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -162,6 +314,46 @@ competitionRouter.put('/:competitionId',
         }
 });
 
+/**
+ * @swagger
+ * /competitions/{id}:
+ *   patch:
+ *     summary: Partially update competition
+ *     tags: [Competitions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Competition ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               yearOfCreation:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Competition updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/CompetitionResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Competition not found
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.patch('/:competitionId',
     validateObjectId('competitionId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -207,7 +399,27 @@ competitionRouter.patch('/:competitionId',
         }
 });
 
-// DELETE /api/v1/competitions/:competitionId
+/**
+ * @swagger
+ * /competitions/{id}:
+ *   delete:
+ *     summary: Delete competition
+ *     tags: [Competitions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Competition ID
+ *     responses:
+ *       204:
+ *         description: Competition deleted
+ *       404:
+ *         description: Competition not found
+ *       500:
+ *         description: Server error
+ */
 competitionRouter.delete('/:competitionId', validateObjectId('competitionId'), async (req, res) => {
     try {
         const competition = await Competition.findByIdAndDelete(req.params.competitionId);

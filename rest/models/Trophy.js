@@ -22,11 +22,6 @@ const TrophySchema = new mongoose.Schema({
         runnerUp: { type: Number, min: 0 },
         thirdPlace: { type: Number, min: 0 }
     },
-    // bonuses: {
-    //     forWinning: { type: Number, required: true, min: 0 },
-    //     forDrawing: { type: Number, required: true, min: 0 },
-    //     forCleanSheet: { type: Number, required: true, min: 0 }
-    // },
 }, {
     timestamps: true
 });

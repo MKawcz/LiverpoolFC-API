@@ -1,3 +1,49 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Manager:
+ *       type: object
+ *       required:
+ *         - name
+ *         - nationality
+ *         - dateOfBirth
+ *       properties:
+ *         name:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Manager's full name
+ *         nationality:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Manager's nationality
+ *         dateOfBirth:
+ *           type: string
+ *           format: date
+ *           description: Manager's date of birth (must be between 18-100 years old)
+ *         status:
+ *           type: string
+ *           enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *           default: ACTIVE
+ *           description: Manager's current status
+ *
+ *   responses:
+ *     ManagerResponse:
+ *       type: object
+ *       properties:
+ *         data:
+ *           $ref: '#/components/schemas/Manager'
+ *         _links:
+ *           type: object
+ *           properties:
+ *             self:
+ *               type: string
+ *             collection:
+ *               type: string
+ */
+
 import express from 'express';
 import { Manager } from '../models/Manager.js';
 import { validateObjectId, validateAllowedFields } from '../middleware/validators.js';
@@ -9,11 +55,37 @@ const ALLOWED_FIELDS = [
     'name',
     'nationality',
     'dateOfBirth',
-    'licenses',
     'status'
 ];
 
-// GET /api/v1/managers
+/**
+ * @swagger
+ * /managers:
+ *   get:
+ *     summary: Get all managers
+ *     tags: [Managers]
+ *     responses:
+ *       200:
+ *         description: List of managers
+ *         headers:
+ *           X-Total-Count:
+ *             description: Total number of managers
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Manager'
+ *       204:
+ *         description: No managers found
+ *       500:
+ *         description: Server error
+ */
 managersRouter.get('/', async (req, res) => {
     try {
         const managers = await Manager.find();
@@ -48,7 +120,33 @@ managersRouter.get('/', async (req, res) => {
     }
 });
 
-// GET /api/v1/managers/:managerId
+/**
+ * @swagger
+ * /managers/{id}:
+ *   get:
+ *     summary: Get manager by ID
+ *     tags: [Managers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Manager ID
+ *     responses:
+ *       200:
+ *         description: Manager found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ManagerResponse'
+ *       304:
+ *         description: Not modified (ETag matched)
+ *       404:
+ *         description: Manager not found
+ *       500:
+ *         description: Server error
+ */
 managersRouter.get('/:managerId', validateObjectId('managerId'), async (req, res) => {
     try {
         const manager = await Manager.findById(req.params.managerId);
@@ -86,7 +184,35 @@ managersRouter.get('/:managerId', validateObjectId('managerId'), async (req, res
     }
 });
 
-// POST /api/v1/managers
+/**
+ * @swagger
+ * /managers:
+ *   post:
+ *     summary: Create new manager
+ *     tags: [Managers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Manager'
+ *     responses:
+ *       201:
+ *         description: Manager created
+ *         headers:
+ *           Location:
+ *             description: URL of created manager
+ *             schema:
+ *               type: string
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ManagerResponse'
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
+ */
 managersRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
@@ -122,7 +248,39 @@ managersRouter.post('/',
         }
     });
 
-// PUT /api/v1/managers/:managerId
+/**
+ * @swagger
+ * /managers/{id}:
+ *   put:
+ *     summary: Update manager
+ *     tags: [Managers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Manager ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Manager'
+ *     responses:
+ *       200:
+ *         description: Manager updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ManagerResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Manager not found
+ *       500:
+ *         description: Server error
+ */
 managersRouter.put('/:managerId',
     validateObjectId('managerId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -169,7 +327,50 @@ managersRouter.put('/:managerId',
         }
     });
 
-// PATCH /api/v1/managers/:managerId
+/**
+ * @swagger
+ * /managers/{id}:
+ *   patch:
+ *     summary: Partially update manager
+ *     tags: [Managers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Manager ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               nationality:
+ *                 type: string
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *               status:
+ *                 type: string
+ *                 enum: [ACTIVE, INACTIVE, SUSPENDED]
+ *     responses:
+ *       200:
+ *         description: Manager updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/responses/ManagerResponse'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Manager not found
+ *       500:
+ *         description: Server error
+ */
 managersRouter.patch('/:managerId',
     validateObjectId('managerId'),
     validateAllowedFields(ALLOWED_FIELDS),
@@ -216,7 +417,27 @@ managersRouter.patch('/:managerId',
         }
     });
 
-// DELETE /api/v1/managers/:managerId
+/**
+ * @swagger
+ * /managers/{id}:
+ *   delete:
+ *     summary: Delete manager
+ *     tags: [Managers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Manager ID
+ *     responses:
+ *       204:
+ *         description: Manager deleted
+ *       404:
+ *         description: Manager not found
+ *       500:
+ *         description: Server error
+ */
 managersRouter.delete('/:managerId', validateObjectId('managerId'), async (req, res) => {
     try {
         const manager = await Manager.findByIdAndDelete(req.params.managerId);
