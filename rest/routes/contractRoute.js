@@ -53,6 +53,36 @@
  *             $ref: '#/components/schemas/Bonus'
  *           description: List of contract bonuses
  *
+ *     ContractRequest:
+ *       type: object
+ *       required:
+ *         - start
+ *         - end
+ *         - salary
+ *       properties:
+ *         start:
+ *           type: string
+ *           format: date
+ *           description: Contract start date (cannot be in future)
+ *         end:
+ *           type: string
+ *           format: date
+ *           description: Contract end date (must be after start date)
+ *         salary:
+ *           type: object
+ *           required:
+ *             - base
+ *             - currency
+ *           properties:
+ *             base:
+ *               type: number
+ *               minimum: 0
+ *               description: Base salary amount
+ *             currency:
+ *               type: string
+ *               enum: [GBP, EUR, USD]
+ *               default: GBP
+ *               description: Salary currency
  *   responses:
  *     ContractResponse:
  *       type: object
@@ -75,7 +105,7 @@ import { validateObjectId, validateAllowedFields } from '../middleware/validator
 export const contractRouter = express.Router();
 
 const ALLOWED_FIELDS = [
-    'start', 'end',
+    'start', 'end', 'salary',
     'salary.base', 'salary.currency'
 ];
 
@@ -217,7 +247,7 @@ contractRouter.get('/:contractId', validateObjectId('contractId'), async (req, r
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Contract'
+ *             $ref: '#/components/schemas/ContractRequest'
  *     responses:
  *       201:
  *         description: Contract created
@@ -286,7 +316,7 @@ contractRouter.post('/', validateAllowedFields(ALLOWED_FIELDS), async (req, res)
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Contract'
+ *               $ref: '#/components/schemas/ContractRequest'
  *     responses:
  *       200:
  *         description: Contract updated
@@ -306,11 +336,7 @@ contractRouter.put('/:contractId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const contract = await Contract.findByIdAndUpdate(
-                req.params.contractId,
-                req.body,
-                { new: true, runValidators: true }
-            );
+            const contract = await Contract.findById(req.params.contractId);
 
             if (!contract) {
                 return res.status(404).json({
@@ -319,7 +345,10 @@ contractRouter.put('/:contractId',
                 });
             }
 
-            // Custom headers
+            Object.assign(contract, req.body);
+
+            await contract.save();
+
             res.setHeader('X-Resource-Type', 'Contract');
             res.setHeader('Last-Modified', new Date().toUTCString());
             res.setHeader('X-Resource-Id', contract._id.toString());
@@ -365,21 +394,7 @@ contractRouter.put('/:contractId',
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               start:
- *                 type: string
- *                 format: date
- *               end:
- *                 type: string
- *                 format: date
- *               salary:
- *                 type: object
- *                 properties:
- *                   base:
- *                     type: number
- *                   currency:
- *                     type: string
+ *             $ref: '#/components/schemas/ContractRequest'
  *     responses:
  *       200:
  *         description: Contract updated
@@ -399,11 +414,7 @@ contractRouter.patch('/:contractId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const contract = await Contract.findByIdAndUpdate(
-                req.params.contractId,
-                { $set: req.body },
-                { new: true, runValidators: true }
-            );
+            const contract = await Contract.findById(req.params.contractId);
 
             if (!contract) {
                 return res.status(404).json({
@@ -412,7 +423,18 @@ contractRouter.patch('/:contractId',
                 });
             }
 
-            // Custom headers
+            for (const [key, value] of Object.entries(req.body)) {
+                if (key === 'salary') {
+                    for (const [salaryKey, salaryValue] of Object.entries(value)) {
+                        contract.salary[salaryKey] = salaryValue;
+                    }
+                } else {
+                    contract[key] = value;
+                }
+            }
+
+            await contract.save();
+
             res.setHeader('X-Resource-Type', 'Contract');
             res.setHeader('Last-Modified', new Date().toUTCString());
             res.setHeader('X-Resource-Id', contract._id.toString());
@@ -487,7 +509,6 @@ contractRouter.delete('/:contractId', validateObjectId('contractId'), async (req
     }
 });
 
-// GET /api/v1/contracts/:contractId/bonuses
 /**
  * @swagger
  * /contracts/{id}/bonuses:

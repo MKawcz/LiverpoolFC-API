@@ -109,10 +109,10 @@ export const playerStatsRouter = express.Router();
 
 const ALLOWED_FIELDS = [
     'appearances', 'minutesPlayed',
-    'goals.total', 'goals.penalties', 'goals.freeKicks',
+    'goals', 'goals.total', 'goals.penalties', 'goals.freeKicks',
     'assists', 'tackles', 'interceptions',
     'clearances', 'cleanSheets', 'saves',
-    'cards.yellow', 'cards.red'
+    'cards', 'cards.yellow', 'cards.red'
 ];
 
 /**

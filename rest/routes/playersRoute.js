@@ -88,12 +88,6 @@
  *           description: Player's jersey number (must be unique)
  *         marketValue:
  *           $ref: '#/components/schemas/MarketValue'
- *         contractsHistory:
- *           type: array
- *           items:
- *             type: string
- *             format: objectId
- *           description: Array of references to Contract model
  *         currentContract:
  *           type: string
  *           format: objectId
@@ -120,18 +114,18 @@
 
 import express from 'express';
 import { Player } from '../models/Player.js';
-import {validateObjectId, validateAllowedFields, createReferenceValidator} from '../middleware/validators.js';
+import {validateObjectId, validateAllowedFields, validateReferences} from '../middleware/validators.js';
 
 export const playersRouter = express.Router();
 
 // Definiujemy dozwolone pola na podstawie schematu, uwzględniając strukturę zagnieżdżoną
 const ALLOWED_FIELDS = [
-    'name.first', 'name.last', 'name.displayName',
+    'name', 'name.first', 'name.last', 'name.displayName',
+    'currentContract', 'stats', 'marketValue',
     'position', 'nationality', 'dateOfBirth',
     'height', 'weight', 'status', 'jerseyNumber',
     'marketValue.value', 'marketValue.currency',
 ];
-const validatePlayerReferences = createReferenceValidator('Player');
 
 /**
  * @swagger
@@ -165,8 +159,7 @@ playersRouter.get('/', async (req, res) => {
     try {
         const players = await Player.find()
             .populate('stats', 'goals assists')
-            .populate('currentContract', 'start end salary')
-            .populate('contractsHistory', 'start end');
+            .populate('currentContract', 'start end salary');
 
         res.setHeader('X-Total-Count', players.length);
         res.setHeader('X-Resource-Type', 'Player');
@@ -181,11 +174,8 @@ playersRouter.get('/', async (req, res) => {
                 ...player.toObject(),
                 _links: {
                     self: `/api/v1/players/${player._id}`,
-                    stats: player.stats ? `/api/v1/player-stats/${player.stats}` : null,
-                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract}` : null,
-                    contractsHistory: player.contractsHistory?.map(contract =>
-                        `/api/v1/contracts/${contract._id}`
-                    )
+                    stats: player.stats ? `/api/v1/player-stats/${player.stats._id}` : null,
+                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract._id}` : null,
                 }
             })),
             _links: {
@@ -234,8 +224,7 @@ playersRouter.get('/:playerId',
         try {
             const player = await Player.findById(req.params.playerId)
                 .populate('stats')
-                .populate('currentContract')
-                .populate('contractsHistory');
+                .populate('currentContract');
 
             if (!player) {
                 return res.status(404).json({
@@ -257,11 +246,8 @@ playersRouter.get('/:playerId',
                 data: player,
                 _links: {
                     self: `/api/v1/players/${player._id}`,
-                    stats: player.stats ? `/api/v1/player-stats/${player.stats}` : null,
-                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract}` : null,
-                    contractsHistory: player.contractsHistory?.map(contract =>
-                        `/api/v1/contracts/${contract._id}`
-                    ),
+                    stats: player.stats ? `/api/v1/player-stats/${player.stats._id}` : null,
+                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract._id}` : null,
                     collection: '/api/v1/players'
                 }
             });
@@ -307,7 +293,10 @@ playersRouter.get('/:playerId',
  */
 playersRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validatePlayerReferences,
+    validateReferences({
+        'currentContract': 'Contract',
+        'stats': 'PlayerStats'
+    }),
     async (req, res) => {
         try {
             const newPlayer = new Player(req.body);
@@ -385,7 +374,10 @@ playersRouter.post('/',
 playersRouter.put('/:playerId',
     validateObjectId('playerId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validatePlayerReferences,
+    validateReferences({
+        'currentContract': 'Contract',
+        'stats': 'PlayerStats'
+    }),
     async (req, res) => {
         try {
             const player = await Player.findByIdAndUpdate(
@@ -394,8 +386,7 @@ playersRouter.put('/:playerId',
                 { new: true, runValidators: true }
             )
                 .populate('stats')
-                .populate('currentContract')
-                .populate('contractsHistory');
+                .populate('currentContract');
 
             if (!player) {
                 return res.status(404).json({
@@ -412,11 +403,8 @@ playersRouter.put('/:playerId',
                 data: player,
                 _links: {
                     self: `/api/v1/players/${player._id}`,
-                    stats: player.stats ? `/api/v1/player-stats/${player.stats}` : null,
-                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract}` : null,
-                    contractsHistory: player.contractsHistory?.map(contract =>
-                        `/api/v1/contracts/${contract._id}`
-                    ),
+                    stats: player.stats ? `/api/v1/player-stats/${player.stats._id}` : null,
+                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract._id}` : null,
                     collection: '/api/v1/players'
                 }
             });
@@ -461,42 +449,7 @@ playersRouter.put('/:playerId',
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: object
- *                 properties:
- *                   first:
- *                     type: string
- *                   last:
- *                     type: string
- *                   displayName:
- *                     type: string
- *               position:
- *                 type: string
- *                 enum: [GK, DEF, MID, FWD]
- *               nationality:
- *                 type: string
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *               height:
- *                 type: number
- *               weight:
- *                 type: number
- *               status:
- *                 type: string
- *                 enum: [ACTIVE, INJURED, SUSPENDED, ON_LOAN, INACTIVE]
- *               jerseyNumber:
- *                 type: number
- *               marketValue:
- *                 type: object
- *                 properties:
- *                   value:
- *                     type: number
- *                   currency:
- *                     type: string
- *                     enum: [EUR, GBP, USD]
+ *             $ref: '#/components/schemas/Player'
  *     responses:
  *       200:
  *         description: Player updated
@@ -516,7 +469,10 @@ playersRouter.put('/:playerId',
 playersRouter.patch('/:playerId',
     validateObjectId('playerId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validatePlayerReferences,
+    validateReferences({
+        'currentContract': 'Contract',
+        'stats': 'PlayerStats'
+    }),
     async (req, res) => {
         try {
             const player = await Player.findByIdAndUpdate(
@@ -525,8 +481,7 @@ playersRouter.patch('/:playerId',
                 { new: true, runValidators: true }
             )
                 .populate('stats')
-                .populate('currentContract')
-                .populate('contractsHistory');
+                .populate('currentContract');
 
             if (!player) {
                 return res.status(404).json({
@@ -543,11 +498,8 @@ playersRouter.patch('/:playerId',
                 data: player,
                 _links: {
                     self: `/api/v1/players/${player._id}`,
-                    stats: player.stats ? `/api/v1/player-stats/${player.stats}` : null,
-                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract}` : null,
-                    contractsHistory: player.contractsHistory?.map(contract =>
-                        `/api/v1/contracts/${contract._id}`
-                    ),
+                    stats: player.stats ? `/api/v1/player-stats/${player.stats._id}` : null,
+                    currentContract: player.currentContract ? `/api/v1/contracts/${player.currentContract._id}` : null,
                     collection: '/api/v1/players'
                 }
             });

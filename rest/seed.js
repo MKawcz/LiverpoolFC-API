@@ -40,8 +40,7 @@ const importData = async () => {
             data.players.map((player, index) => ({
                 ...player,
                 stats: playerStats[index]._id,
-                currentContract: contracts[index]._id,
-                contractsHistory: [contracts[index]._id]
+                currentContract: contracts[index]._id
             }))
         );
 
@@ -53,8 +52,7 @@ const importData = async () => {
             }))
         );
 
-        // Insert matches with references
-        const matches = await Match.insertMany(
+        await Match.insertMany(
             data.matches.map((match, index) => ({
                 ...match,
                 season: seasons[index % seasons.length]._id,
@@ -86,23 +84,6 @@ const importData = async () => {
             { status: 'FINISHED' },
             { $push: { trophies: { $each: trophies.map(t => t._id) } } }
         );
-
-        // Update seasons with top scorers
-        const topScorerUpdates = seasons.map((season, index) => ({
-            updateOne: {
-                filter: { _id: season._id },
-                update: {
-                    $set: {
-                        'topScorer.player': players[0]._id,
-                        'topScorer.goals': 25,
-                        'topAssister.player': players[2]._id,
-                        'topAssister.assists': 15
-                    }
-                }
-            }
-        }));
-
-        await Season.bulkWrite(topScorerUpdates);
 
         console.log('Data imported successfully!');
         process.exit();

@@ -42,10 +42,6 @@ const PlayerSchema = new mongoose.Schema({
         max: 99,
         unique: true
     },
-    contractsHistory: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Contract'
-    }],
     currentContract: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Contract'

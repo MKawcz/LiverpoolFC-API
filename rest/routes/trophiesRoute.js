@@ -57,15 +57,14 @@
 
 import express from 'express';
 import { Trophy } from '../models/Trophy.js';
-import { validateObjectId, validateAllowedFields, createReferenceValidator } from '../middleware/validators.js';
+import { validateObjectId, validateAllowedFields, validateReferences } from '../middleware/validators.js';
 
 export const trophiesRouter = express.Router();
 
 const ALLOWED_FIELDS = [
     'competition', 'wonDate',
-    'prizes.winner', 'prizes.runnerUp', 'prizes.thirdPlace'
+    'prizes', 'prizes.winner', 'prizes.runnerUp', 'prizes.thirdPlace'
 ];
-const validateTrophyReferences = createReferenceValidator('Trophy');
 
 /**
  * @swagger
@@ -113,7 +112,7 @@ trophiesRouter.get('/', async (req, res) => {
                 ...trophy.toObject(),
                 _links: {
                     self: `/api/v1/trophies/${trophy._id}`,
-                    competition: `/api/v1/competitions/${trophy.competition._id}`,
+                    competition: trophy.competition ? `/api/v1/competitions/${trophy.competition._id}` : null,
                     collection: '/api/v1/trophies'
                 }
             }))
@@ -181,7 +180,7 @@ trophiesRouter.get('/:trophyId',
                 data: trophy,
                 _links: {
                     self: `/api/v1/trophies/${trophy._id}`,
-                    competition: `/api/v1/competitions/${trophy.competition._id}`,
+                    competition: trophy.competition ? `/api/v1/competitions/${trophy.competition._id}` : null,
                     collection: '/api/v1/trophies'
                 }
             });
@@ -225,7 +224,9 @@ trophiesRouter.get('/:trophyId',
  */
 trophiesRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validateTrophyReferences,
+    validateReferences({
+        'competition': 'Competition',
+    }),
     async (req, res) => {
         try {
             const newTrophy = new Trophy(req.body);
@@ -239,7 +240,7 @@ trophiesRouter.post('/',
                 data: newTrophy,
                 _links: {
                     self: `/api/v1/trophies/${newTrophy._id}`,
-                    competition: `/api/v1/competitions/${newTrophy.competition}`,
+                    competition: trophy.competition ? `/api/v1/competitions/${newTrophy.competition}` : null,
                     collection: '/api/v1/trophies'
                 }
             });
@@ -295,7 +296,9 @@ trophiesRouter.post('/',
 trophiesRouter.put('/:trophyId',
     validateObjectId('trophyId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateTrophyReferences,
+    validateReferences({
+        'competition': 'Competition',
+    }),
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(
@@ -319,7 +322,7 @@ trophiesRouter.put('/:trophyId',
                 data: trophy,
                 _links: {
                     self: `/api/v1/trophies/${trophy._id}`,
-                    competition: `/api/v1/competitions/${trophy.competition._id}`,
+                    competition: trophy.competition ? `/api/v1/competitions/${trophy.competition._id}` : null,
                     collection: '/api/v1/trophies'
                 }
             });
@@ -394,7 +397,9 @@ trophiesRouter.put('/:trophyId',
 trophiesRouter.patch('/:trophyId',
     validateObjectId('trophyId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateTrophyReferences,
+    validateReferences({
+        'competition': 'Competition',
+    }),
     async (req, res) => {
         try {
             const trophy = await Trophy.findByIdAndUpdate(
@@ -418,7 +423,7 @@ trophiesRouter.patch('/:trophyId',
                 data: trophy,
                 _links: {
                     self: `/api/v1/trophies/${trophy._id}`,
-                    competition: `/api/v1/competitions/${trophy.competition._id}`,
+                    competition: trophy.competition ? `/api/v1/competitions/${trophy.competition._id}` : null,
                     collection: '/api/v1/trophies'
                 }
             });

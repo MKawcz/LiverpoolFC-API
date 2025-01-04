@@ -54,7 +54,7 @@
 
 import express from 'express';
 import { Season } from '../models/Season.js';
-import { validateObjectId, validateAllowedFields, createReferenceValidator } from '../middleware/validators.js';
+import { validateObjectId, validateAllowedFields, validateReferences } from '../middleware/validators.js';
 
 export const seasonRouter = express.Router();
 
@@ -62,7 +62,6 @@ const ALLOWED_FIELDS = [
     'years', 'status',
     'trophies', 'manager',
 ];
-const validateSeasonReferences = createReferenceValidator('Season');
 
 /**
  * @swagger
@@ -96,9 +95,7 @@ seasonRouter.get('/', async (req, res) => {
     try {
         const seasons = await Season.find()
             .populate('manager', 'name')
-            .populate('trophies')
-            .populate('topScorer.player', 'name.displayName')
-            .populate('topAssister.player', 'name.displayName');
+            .populate('trophies');
 
         res.setHeader('X-Total-Count', seasons.length);
         res.setHeader('X-Resource-Type', 'Season');
@@ -114,10 +111,8 @@ seasonRouter.get('/', async (req, res) => {
                 _links: {
                     self: `/api/v1/seasons/${season._id}`,
                     collection: '/api/v1/seasons',
-                    manager: `/api/v1/managers/${season.manager._id}`,
-                    trophies: season.trophies.map(trophy => `/api/v1/trophies/${trophy._id}`),
-                    topScorer: season.topScorer?.player ? `/api/v1/players/${season.topScorer.player._id}` : null,
-                    topAssister: season.topAssister?.player ? `/api/v1/players/${season.topAssister.player._id}` : null
+                    manager: season.manager ? `/api/v1/managers/${season.manager._id}` : null,
+                    trophies: season.trophies?.map(trophy => `/api/v1/trophies/${trophy._id}`) ?? []
                 }
             })),
             _links: {
@@ -166,9 +161,7 @@ seasonRouter.get('/:seasonId',
         try {
             const season = await Season.findById(req.params.seasonId)
                 .populate('manager', 'name')
-                .populate('trophies')
-                .populate('topScorer.player', 'name.displayName')
-                .populate('topAssister.player', 'name.displayName');
+                .populate('trophies');
 
             if (!season) {
                 return res.status(404).json({
@@ -191,10 +184,8 @@ seasonRouter.get('/:seasonId',
                 _links: {
                     self: `/api/v1/seasons/${season._id}`,
                     collection: '/api/v1/seasons',
-                    manager: `/api/v1/managers/${season.manager._id}`,
-                    trophies: season.trophies.map(trophy => `/api/v1/trophies/${trophy._id}`),
-                    topScorer: season.topScorer?.player ? `/api/v1/players/${season.topScorer.player._id}` : null,
-                    topAssister: season.topAssister?.player ? `/api/v1/players/${season.topAssister.player._id}` : null
+                    manager: season.manager ? `/api/v1/managers/${season.manager._id}` : null,
+                    trophies: season.trophies?.map(trophy => `/api/v1/trophies/${trophy._id}`) ?? []
                 }
             });
         } catch (error) {
@@ -239,7 +230,10 @@ seasonRouter.get('/:seasonId',
  */
 seasonRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validateSeasonReferences,
+    validateReferences({
+        'trophies': 'Trophy',
+        'manager': 'Manager'
+    }),
     async (req, res) => {
         try {
             const newSeason = new Season(req.body);
@@ -254,10 +248,8 @@ seasonRouter.post('/',
                 _links: {
                     self: `/api/v1/seasons/${newSeason._id}`,
                     collection: '/api/v1/seasons',
-                    manager: `/api/v1/managers/${newSeason.manager}`,
-                    trophies: (newSeason.trophies || []).map(trophy => `/api/v1/trophies/${trophy}`),
-                    topScorer: newSeason.topScorer?.player ? `/api/v1/players/${newSeason.topScorer.player}` : null,
-                    topAssister: newSeason.topAssister?.player ? `/api/v1/players/${newSeason.topAssister.player}` : null
+                    manager: newSeason.manager ? `/api/v1/managers/${newSeason.manager}` : null,
+                    trophies: newSeason.trophies?.map(trophy => `/api/v1/trophies/${trophy._id}`) ?? []
                 }
             });
         } catch (error) {
@@ -321,7 +313,10 @@ seasonRouter.post('/',
 seasonRouter.put('/:seasonId',
     validateObjectId('seasonId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateSeasonReferences,
+    validateReferences({
+        'trophies': 'Trophy',
+        'manager': 'Manager'
+    }),
     async (req, res) => {
         try {
             const season = await Season.findByIdAndUpdate(
@@ -330,9 +325,7 @@ seasonRouter.put('/:seasonId',
                 { new: true, runValidators: true }
             )
                 .populate('manager', 'name')
-                .populate('trophies')
-                .populate('topScorer.player', 'name.displayName')
-                .populate('topAssister.player', 'name.displayName');
+                .populate('trophies');
 
             if (!season) {
                 return res.status(404).json({
@@ -350,10 +343,8 @@ seasonRouter.put('/:seasonId',
                 _links: {
                     self: `/api/v1/seasons/${season._id}`,
                     collection: '/api/v1/seasons',
-                    manager: `/api/v1/managers/${season.manager._id}`,
-                    trophies: season.trophies.map(trophy => `/api/v1/trophies/${trophy._id}`),
-                    topScorer: season.topScorer?.player ? `/api/v1/players/${season.topScorer.player._id}` : null,
-                    topAssister: season.topAssister?.player ? `/api/v1/players/${season.topAssister.player._id}` : null
+                    manager: season.manager ? `/api/v1/managers/${season.manager._id}` : null,
+                    trophies: season.trophies?.map(trophy => `/api/v1/trophies/${trophy._id}`) ?? []
                 }
             });
         } catch (error) {
@@ -432,7 +423,10 @@ seasonRouter.put('/:seasonId',
 seasonRouter.patch('/:seasonId',
     validateObjectId('seasonId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateSeasonReferences,
+    validateReferences({
+        'trophies': 'Trophy',
+        'manager': 'Manager'
+    }),
     async (req, res) => {
         try {
             const season = await Season.findByIdAndUpdate(
@@ -441,9 +435,7 @@ seasonRouter.patch('/:seasonId',
                 { new: true, runValidators: true }
             )
                 .populate('manager', 'name')
-                .populate('trophies')
-                .populate('topScorer.player', 'name.displayName')
-                .populate('topAssister.player', 'name.displayName');
+                .populate('trophies');
 
             if (!season) {
                 return res.status(404).json({
@@ -461,10 +453,8 @@ seasonRouter.patch('/:seasonId',
                 _links: {
                     self: `/api/v1/seasons/${season._id}`,
                     collection: '/api/v1/seasons',
-                    manager: `/api/v1/managers/${season.manager._id}`,
-                    trophies: season.trophies.map(trophy => `/api/v1/trophies/${trophy._id}`),
-                    topScorer: season.topScorer?.player ? `/api/v1/players/${season.topScorer.player._id}` : null,
-                    topAssister: season.topAssister?.player ? `/api/v1/players/${season.topAssister.player._id}` : null
+                    manager: season.manager ? `/api/v1/managers/${season.manager._id}` : null,
+                    trophies: season.trophies?.map(trophy => `/api/v1/trophies/${trophy._id}`) ?? []
                 }
             });
         } catch (error) {

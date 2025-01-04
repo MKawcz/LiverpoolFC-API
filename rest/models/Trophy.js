@@ -12,7 +12,6 @@ const TrophySchema = new mongoose.Schema({
         validate: {
             validator: function(value) {
                 return value <= new Date();
-
             },
             message: 'Date of winning the trophy cannot be in the future'
         }

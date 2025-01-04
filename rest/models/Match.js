@@ -18,7 +18,8 @@ const GoalSchema = new mongoose.Schema({
     },
     description: { type: String }
 }, {
-    timestamps: true
+    timestamps: true,
+    _id: false
 });
 
 const SubstitutionSchema = new mongoose.Schema({
@@ -38,25 +39,19 @@ const SubstitutionSchema = new mongoose.Schema({
         min: 1,
         max: 120
     }
-});
+}, { _id: false });
 
 const LineupSchema = new mongoose.Schema({
     starting: {
         type: [{
             player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true },
-        }],
-        validate: {
-            validator: function(v) {
-                return v.length === 11;
-            },
-            message: 'Starting lineup must have exactly 11 players'
-        }
+        }]
     },
     substitutes: [{
         player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player', required: true }
     }],
     substitutions: [SubstitutionSchema]
-});
+}, { _id: false });
 
 const MatchSchema = new mongoose.Schema({
     season: {
@@ -74,9 +69,14 @@ const MatchSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function(value) {
-                return value <= new Date();
+                const startDate = new Date(value);
+                const currentDate = new Date();
+                const minDate = new Date('2000-01-01');
+                const maxDate = new Date(currentDate.getFullYear(), 11, 31);
+
+                return startDate >= minDate && startDate <= maxDate;
             },
-            message: 'Match date cannot be in the future'
+            message: 'Start date must be between year 2000 and end of current year'
         }
     },
     stadium: {
@@ -93,8 +93,7 @@ const MatchSchema = new mongoose.Schema({
         away: { type: Number, min: 0, default: 0 }
     },
     lineup: {
-        type: LineupSchema,
-        required: true
+        type: LineupSchema
     },
     goals: [GoalSchema],
     referee: {

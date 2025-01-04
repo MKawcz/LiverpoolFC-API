@@ -1,34 +1,6 @@
 import mongoose from 'mongoose';
+import { get } from 'lodash';
 
-const MODEL_REFERENCES = {
-    Match: {
-        season: 'Season',
-        competition: 'Competition',
-        stadium: 'Stadium',
-        'lineup.starting.*.player': 'Player',
-        'lineup.substitutes.*.player': 'Player',
-        'lineup.substitutions.*.playerIn': 'Player',
-        'lineup.substitutions.*.playerOut': 'Player',
-        'goals.*.scorer': 'Player',
-        'goals.*.assistant': { model: 'Player', optional: true }
-    },
-    Season: {
-        manager: 'Manager',
-        trophies: ['Trophy'],
-        'topScorer.player': { model: 'Player', optional: true },
-        'topAssister.player': { model: 'Player', optional: true }
-    },
-    Player: {
-        currentContract: { model: 'Contract', optional: true },
-        stats: { model: 'PlayerStats', optional: true },
-        contractsHistory: ['Contract']
-    },
-    Trophy: {
-        competition: 'Competition'
-    }
-};
-
-// Walidacja ID MongoDB z parametryzowaną nazwą parametru
 export const validateObjectId = (paramName) => (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(req.params[paramName])) {
         return res.status(400).json({
@@ -40,11 +12,16 @@ export const validateObjectId = (paramName) => (req, res, next) => {
     next();
 };
 
-// Walidacja czy przesłane pola są dozwolone
 export const validateAllowedFields = (allowedFields) => (req, res, next) => {
-    const receivedFields = Object.keys(req.body);
-    const invalidFields = receivedFields.filter(field => !allowedFields.includes(field));
-
+    let invalidFields;
+    if (Array.isArray(req.body)) {
+      invalidFields = req.body
+            .flatMap(item => Object.keys(item))
+            .filter(field => !allowedFields.includes(field));
+    } else {
+        const receivedFields = Object.keys(req.body);
+        invalidFields = receivedFields.filter(field => !allowedFields.includes(field));
+    }
     if (invalidFields.length > 0) {
         return res.status(400).json({
             error: 'Invalid fields',
@@ -56,54 +33,63 @@ export const validateAllowedFields = (allowedFields) => (req, res, next) => {
     next();
 };
 
-// Pomocnicza funkcja do pobierania wartości z zagnieżdżonej ścieżki
-const getValueByPath = (obj, path) => {
-    if (path.includes('*')) {
-        const [arrayPath, ...rest] = path.split('.*.');
-        const array = arrayPath.split('.').reduce((o, i) => o?.[i], obj);
-        if (!Array.isArray(array)) return [];
-        return array.map(item => rest.join('.').split('.').reduce((o, i) => o?.[i], item)).filter(Boolean);
-    }
-    return [path.split('.').reduce((o, i) => o?.[i], obj)].filter(Boolean);
-};
-
-// Główna funkcja walidacyjna
-export const createReferenceValidator = (modelName) => async (req, res, next) => {
+export const validateReferences = (validations) => async (req, res, next) => {
     try {
-        const references = MODEL_REFERENCES[modelName];
-        if (!references) return next();
+        const formatErrors = [];
+        const notFoundErrors = [];
 
-        for (const [path, refInfo] of Object.entries(references)) {
-            const isArray = Array.isArray(refInfo);
-            const modelName = isArray ? refInfo[0] : (typeof refInfo === 'string' ? refInfo : refInfo.model);
-            const isOptional = !isArray && typeof refInfo === 'object' && refInfo.optional;
+        for (const [path, modelName] of Object.entries(validations)) {
+            const value = get(req.body, path);
+            if (!value) continue;
 
-            const values = getValueByPath(req.body, path);
+            const ids = Array.isArray(value)
+                ? value.map(item => item?.player || item).filter(Boolean)
+                : [value];
 
-            if (values.length > 0) {
-                const ids = isArray ? values : values;
-                const count = await mongoose.model(modelName).countDocuments({
-                    _id: { $in: ids }
-                });
+            if (ids.length === 0) continue;
 
-                if (count !== ids.length) {
-                    return res.status(400).json({
-                        error: 'Invalid Reference',
-                        message: `Invalid ${modelName} reference in ${path}`,
-                        _links: { collection: req.baseUrl }
-                    });
-                }
-            } else if (!isOptional && req.method === 'POST' && !path.includes('*')) {
-                return res.status(400).json({
-                    error: 'Missing Reference',
-                    message: `Required field ${path} is missing`,
-                    _links: { collection: req.baseUrl }
-                });
+            // Check format first
+            const invalidFormatIds = ids.filter(id => !mongoose.Types.ObjectId.isValid(id));
+            if (invalidFormatIds.length > 0) {
+                formatErrors.push(`Invalid ID format in ${path}: ${invalidFormatIds.join(', ')}`);
+                continue;
             }
+
+            // If format is valid, check existence
+            const Model = mongoose.model(modelName);
+            const existingDocs = await Model.find({ _id: { $in: ids } }, '_id');
+            const existingIds = existingDocs.map(doc => doc._id.toString());
+
+            const missingIds = ids.filter(id => !existingIds.includes(id.toString()));
+            if (missingIds.length > 0) {
+                notFoundErrors.push(`${modelName}(s) not found in ${path}: ${missingIds.join(', ')}`);
+            }
+        }
+
+        // Return format errors first if any
+        if (formatErrors.length > 0) {
+            return res.status(400).json({
+                error: 'Invalid ID Format',
+                message: formatErrors.join('. '),
+                _links: { collection: req.baseUrl }
+            });
+        }
+
+        // Then return not found errors if any
+        if (notFoundErrors.length > 0) {
+            return res.status(404).json({
+                error: 'References Not Found',
+                message: notFoundErrors.join('. '),
+                _links: { collection: req.baseUrl }
+            });
         }
 
         next();
     } catch (error) {
-        next(error);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: error.message,
+            _links: { collection: req.baseUrl }
+        });
     }
 };

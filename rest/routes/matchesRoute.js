@@ -144,6 +144,67 @@
  *             fourth:
  *               type: string
  *
+ *     MatchRequest:
+ *       type: object
+ *       required:
+ *         - season
+ *         - competition
+ *         - date
+ *         - stadium
+ *         - opponent
+ *         - lineup
+ *         - referee
+ *       properties:
+ *         season:
+ *           type: string
+ *           format: objectId
+ *           description: Reference to Season model
+ *         competition:
+ *           type: string
+ *           format: objectId
+ *           description: Reference to Competition model
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: Match date (cannot be in future)
+ *         stadium:
+ *           type: string
+ *           format: objectId
+ *           description: Reference to Stadium model
+ *         opponent:
+ *           type: object
+ *           required:
+ *             - name
+ *           properties:
+ *             name:
+ *               type: string
+ *             manager:
+ *               type: string
+ *         score:
+ *           type: object
+ *           properties:
+ *             home:
+ *               type: number
+ *               minimum: 0
+ *               default: 0
+ *             away:
+ *               type: number
+ *               minimum: 0
+ *               default: 0
+ *         referee:
+ *           type: object
+ *           required:
+ *             - main
+ *           properties:
+ *             main:
+ *               type: string
+ *             assistants:
+ *               type: array
+ *               items:
+ *                 type: string
+ *             fourth:
+ *               type: string
+ *
  *   responses:
  *     MatchResponse:
  *       type: object
@@ -161,22 +222,21 @@
 
 import express from 'express';
 import { Match } from '../models/Match.js';
-import { validateObjectId, validateAllowedFields, createReferenceValidator } from '../middleware/validators.js';
+import { validateObjectId, validateAllowedFields, validateReferences } from '../middleware/validators.js';
 
 export const matchesRouter = express.Router();
 
 const ALLOWED_FIELDS = [
     'season', 'competition', 'date', 'stadium',
-    'opponent.name', 'opponent.manager',
-    'score.home', 'score.away',
-    'referee.main', 'referee.assistants', 'referee.fourth'
+    'opponent', 'opponent.name', 'opponent.manager',
+    'score', 'score.home', 'score.away',
+    'referee', 'referee.main', 'referee.assistants', 'referee.fourth'
 ];
 
 const ALLOWED_GOAL_FIELDS = ['scorer', 'assistant', 'minute', 'description'];
 const ALLOWED_SUBSTITUTION_FIELDS = ['playerIn', 'playerOut', 'minute'];
 const ALLOWED_LINEUP_STARTING_FIELDS = ['player'];
 const ALLOWED_LINEUP_SUBSTITUTE_FIELDS = ['player'];
-const validateMatchReferences = createReferenceValidator('Match');
 
 /**
  * @swagger
@@ -226,9 +286,9 @@ matchesRouter.get('/', async (req, res) => {
                 ...match.toObject(),
                 _links: {
                     self: `/api/v1/matches/${match._id}`,
-                    season: `/api/v1/seasons/${match.season._id}`,
-                    competition: `/api/v1/competitions/${match.competition._id}`,
-                    stadium: `/api/v1/stadiums/${match.stadium._id}`,
+                    season: match.season ? `/api/v1/seasons/${match.season._id}` : null,
+                    competition: match.competition ? `/api/v1/competitions/${match.competition._id}` : null,
+                    stadium: match.stadium ? `/api/v1/stadiums/${match.stadium._id}` : null,
                     goals: `/api/v1/matches/${match._id}/goals`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     substitutions: `/api/v1/matches/${match._id}/lineup/substitutions`
@@ -310,9 +370,9 @@ matchesRouter.get('/:matchId',
                 _links: {
                     self: `/api/v1/matches/${match._id}`,
                     collection: '/api/v1/matches',
-                    season: `/api/v1/seasons/${match.season._id}`,
-                    competition: `/api/v1/competitions/${match.competition._id}`,
-                    stadium: `/api/v1/stadiums/${match.stadium._id}`,
+                    season: match.season ? `/api/v1/seasons/${match.season._id}` : null,
+                    competition: match.competition ? `/api/v1/competitions/${match.competition._id}` : null,
+                    stadium: match.stadium ? `/api/v1/stadiums/${match.stadium._id}` : null,
                     goals: `/api/v1/matches/${match._id}/goals`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     substitutions: `/api/v1/matches/${match._id}/lineup/substitutions`
@@ -338,7 +398,7 @@ matchesRouter.get('/:matchId',
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Match'
+ *             $ref: '#/components/schemas/MatchRequest'
  *     responses:
  *       201:
  *         description: Match created
@@ -358,10 +418,21 @@ matchesRouter.get('/:matchId',
  */
 matchesRouter.post('/',
     validateAllowedFields(ALLOWED_FIELDS),
-    validateMatchReferences,
+    validateReferences({
+        'season': 'Season',
+        'competition': 'Competition',
+        'stadium': 'Stadium',
+    }),
     async (req, res) => {
         try {
-            const newMatch = new Match(req.body);
+            const newMatch = new Match({
+                ...req.body,
+                lineup: {
+                    starting: [],
+                    substitutes: [],
+                    substitutions: []
+                }
+            });
             await newMatch.save();
 
             res.setHeader('Location', `/api/v1/matches/${newMatch._id}`);
@@ -373,9 +444,9 @@ matchesRouter.post('/',
                 _links: {
                     self: `/api/v1/matches/${newMatch._id}`,
                     collection: '/api/v1/matches',
-                    season: `/api/v1/seasons/${newMatch.season}`,
-                    competition: `/api/v1/competitions/${newMatch.competition}`,
-                    stadium: `/api/v1/stadiums/${newMatch.stadium}`,
+                    season: newMatch.season ? `/api/v1/seasons/${newMatch.season._id}` : null,
+                    competition: newMatch.competition ? `/api/v1/competitions/${newMatch.competition._id}` : null,
+                    stadium: newMatch.stadium ? `/api/v1/stadiums/${newMatch.stadium._id}` : null,
                     goals: `/api/v1/matches/${newMatch._id}/goals`,
                     lineup: `/api/v1/matches/${newMatch._id}/lineup`,
                     substitutions: `/api/v1/matches/${newMatch._id}/lineup/substitutions`
@@ -415,7 +486,7 @@ matchesRouter.post('/',
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Match'
+ *             $ref: '#/components/schemas/MatchRequest'
  *     responses:
  *       200:
  *         description: Match updated
@@ -433,7 +504,11 @@ matchesRouter.post('/',
 matchesRouter.put('/:matchId',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateMatchReferences,
+    validateReferences({
+        'season': 'Season',
+        'competition': 'Competition',
+        'stadium': 'Stadium',
+    }),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(
@@ -461,9 +536,9 @@ matchesRouter.put('/:matchId',
                 _links: {
                     self: `/api/v1/matches/${match._id}`,
                     collection: '/api/v1/matches',
-                    season: `/api/v1/seasons/${match.season._id}`,
-                    competition: `/api/v1/competitions/${match.competition._id}`,
-                    stadium: `/api/v1/stadiums/${match.stadium._id}`,
+                    season: match.season ? `/api/v1/seasons/${match.season._id}` : null,
+                    competition: match.competition ? `/api/v1/competitions/${match.competition._id}` : null,
+                    stadium: match.stadium ? `/api/v1/stadiums/${match.stadium._id}` : null,
                     goals: `/api/v1/matches/${match._id}/goals`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     substitutions: `/api/v1/matches/${match._id}/lineup/substitutions`
@@ -503,42 +578,7 @@ matchesRouter.put('/:matchId',
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               season:
- *                 type: string
- *               competition:
- *                 type: string
- *               date:
- *                 type: string
- *                 format: date-time
- *               stadium:
- *                 type: string
- *               opponent:
- *                 type: object
- *                 properties:
- *                   name:
- *                     type: string
- *                   manager:
- *                     type: string
- *               score:
- *                 type: object
- *                 properties:
- *                   home:
- *                     type: number
- *                   away:
- *                     type: number
- *               referee:
- *                 type: object
- *                 properties:
- *                   main:
- *                     type: string
- *                   assistants:
- *                     type: array
- *                     items:
- *                       type: string
- *                   fourth:
- *                     type: string
+ *              $ref: '#/components/schemas/MatchRequest'
  *     responses:
  *       200:
  *         description: Match updated
@@ -556,7 +596,11 @@ matchesRouter.put('/:matchId',
 matchesRouter.patch('/:matchId',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_FIELDS),
-    validateMatchReferences,
+    validateReferences({
+        'season': 'Season',
+        'competition': 'Competition',
+        'stadium': 'Stadium',
+    }),
     async (req, res) => {
         try {
             const match = await Match.findByIdAndUpdate(
@@ -584,9 +628,9 @@ matchesRouter.patch('/:matchId',
                 _links: {
                     self: `/api/v1/matches/${match._id}`,
                     collection: '/api/v1/matches',
-                    season: `/api/v1/seasons/${match.season._id}`,
-                    competition: `/api/v1/competitions/${match.competition._id}`,
-                    stadium: `/api/v1/stadiums/${match.stadium._id}`,
+                    season: match.season ? `/api/v1/seasons/${match.season._id}` : null,
+                    competition: match.competition ? `/api/v1/competitions/${match.competition._id}` : null,
+                    stadium: match.stadium ? `/api/v1/stadiums/${match.stadium._id}` : null,
                     goals: `/api/v1/matches/${match._id}/goals`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     substitutions: `/api/v1/matches/${match._id}/lineup/substitutions`
@@ -722,7 +766,7 @@ matchesRouter.get('/:matchId/goals',
                     _links: {
                         self: `/api/v1/matches/${match._id}/goals/${index}`,
                         match: `/api/v1/matches/${match._id}`,
-                        scorer: `/api/v1/players/${goal.scorer._id}`,
+                        scorer: goal.scorer ? `/api/v1/players/${goal.scorer._id}` : null,
                         ...(goal.assistant && { assistant: `/api/v1/players/${goal.assistant._id}` })
                     }
                 })),
@@ -816,7 +860,7 @@ matchesRouter.get('/:matchId/goals/:goalIndex',
                     self: `/api/v1/matches/${match._id}/goals/${goalIndex}`,
                     match: `/api/v1/matches/${match._id}`,
                     collection: `/api/v1/matches/${match._id}/goals`,
-                    scorer: `/api/v1/players/${goal.scorer._id}`,
+                    scorer: goal.scorer ? `/api/v1/players/${goal.scorer._id}` : null,
                     ...(goal.assistant && { assistant: `/api/v1/players/${goal.assistant._id}` })
                 }
             });
@@ -873,6 +917,10 @@ matchesRouter.get('/:matchId/goals/:goalIndex',
 matchesRouter.post('/:matchId/goals',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_GOAL_FIELDS),
+    validateReferences({
+        'scorer': 'Player',
+        'assistant': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -900,7 +948,7 @@ matchesRouter.post('/:matchId/goals',
                     self: `/api/v1/matches/${match._id}/goals/${newGoalIndex}`,
                     match: `/api/v1/matches/${match._id}`,
                     collection: `/api/v1/matches/${match._id}/goals`,
-                    scorer: `/api/v1/players/${newGoal.scorer}`,
+                    scorer: newGoal.scorer ? `/api/v1/players/${newGoal.scorer}` : null,
                     ...(newGoal.assistant && { assistant: `/api/v1/players/${newGoal.assistant}` })
                 }
             });
@@ -965,6 +1013,10 @@ matchesRouter.post('/:matchId/goals',
 matchesRouter.put('/:matchId/goals/:goalIndex',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_GOAL_FIELDS),
+    validateReferences({
+        'scorer': 'Player',
+        'assistant': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -1000,7 +1052,7 @@ matchesRouter.put('/:matchId/goals/:goalIndex',
                     self: `/api/v1/matches/${match._id}/goals/${goalIndex}`,
                     match: `/api/v1/matches/${match._id}`,
                     collection: `/api/v1/matches/${match._id}/goals`,
-                    scorer: `/api/v1/players/${match.goals[goalIndex].scorer}`,
+                    scorer: match.goals[goalIndex].scorer ? `/api/v1/players/${match.goals[goalIndex].scorer}` : null,
                     ...(match.goals[goalIndex].assistant && {
                         assistant: `/api/v1/players/${match.goals[goalIndex].assistant}`
                     })
@@ -1266,6 +1318,9 @@ matchesRouter.get('/:matchId/lineup/starting',
 matchesRouter.put('/:matchId/lineup/starting',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_LINEUP_STARTING_FIELDS),
+    validateReferences({
+        'player': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -1274,15 +1329,6 @@ matchesRouter.put('/:matchId/lineup/starting',
                 return res.status(404).json({
                     error: 'Match not found',
                     _links: { collection: '/api/v1/matches' }
-                });
-            }
-
-            // Sprawdzenie czy jest dokładnie 11 graczy
-            if (!Array.isArray(req.body) || req.body.length !== 11) {
-                return res.status(400).json({
-                    error: 'Validation Error',
-                    message: 'Starting lineup must have exactly 11 players',
-                    _links: { match: `/api/v1/matches/${match._id}` }
                 });
             }
 
@@ -1420,6 +1466,9 @@ matchesRouter.get('/:matchId/lineup/substitutes',
 matchesRouter.post('/:matchId/lineup/substitutes',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_LINEUP_SUBSTITUTE_FIELDS),
+    validateReferences({
+        'player': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -1531,8 +1580,8 @@ matchesRouter.get('/:matchId/lineup/substitutions',
                         self: `/api/v1/matches/${match._id}/lineup/substitutions/${index}`,
                         match: `/api/v1/matches/${match._id}`,
                         lineup: `/api/v1/matches/${match._id}/lineup`,
-                        playerIn: `/api/v1/players/${sub.playerIn._id}`,
-                        playerOut: `/api/v1/players/${sub.playerOut._id}`
+                        playerIn: sub.playerIn._id ?`/api/v1/players/${sub.playerIn._id}` : null,
+                        playerOut: sub.playerOut._id ? `/api/v1/players/${sub.playerOut._id}` : null
                     }
                 })),
                 _links: {
@@ -1628,8 +1677,8 @@ matchesRouter.get('/:matchId/lineup/substitutions/:substitutionIndex',
                     match: `/api/v1/matches/${match._id}`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     collection: `/api/v1/matches/${match._id}/lineup/substitutions`,
-                    playerIn: `/api/v1/players/${substitution.playerIn._id}`,
-                    playerOut: `/api/v1/players/${substitution.playerOut._id}`
+                    playerIn: substitution.playerIn ? `/api/v1/players/${substitution.playerIn._id}` : null,
+                    playerOut: substitution.playerOut._id ? `/api/v1/players/${substitution.playerOut._id}` : null
                 }
             });
         } catch (error) {
@@ -1685,6 +1734,10 @@ matchesRouter.get('/:matchId/lineup/substitutions/:substitutionIndex',
 matchesRouter.post('/:matchId/lineup/substitutions',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_SUBSTITUTION_FIELDS),
+    validateReferences({
+        'playerIn': 'Player',
+        'playerOut': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -1713,8 +1766,8 @@ matchesRouter.post('/:matchId/lineup/substitutions',
                     match: `/api/v1/matches/${match._id}`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     collection: `/api/v1/matches/${match._id}/lineup/substitutions`,
-                    playerIn: `/api/v1/players/${newSubstitution.playerIn}`,
-                    playerOut: `/api/v1/players/${newSubstitution.playerOut}`
+                    playerIn: newSubstitution.playerIn ? `/api/v1/players/${newSubstitution.playerIn}` : null,
+                    playerOut: newSubstitution.playerIn ? `/api/v1/players/${newSubstitution.playerOut}` : null
                 }
             });
         } catch (error) {
@@ -1779,6 +1832,10 @@ matchesRouter.post('/:matchId/lineup/substitutions',
 matchesRouter.put('/:matchId/lineup/substitutions/:substitutionIndex',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_SUBSTITUTION_FIELDS),
+    validateReferences({
+        'playerIn': 'Player',
+        'playerOut': 'Player'
+    }),
     async (req, res) => {
         try {
             const match = await Match.findById(req.params.matchId);
@@ -1815,8 +1872,8 @@ matchesRouter.put('/:matchId/lineup/substitutions/:substitutionIndex',
                     match: `/api/v1/matches/${match._id}`,
                     lineup: `/api/v1/matches/${match._id}/lineup`,
                     collection: `/api/v1/matches/${match._id}/lineup/substitutions`,
-                    playerIn: `/api/v1/players/${match.lineup.substitutions[substitutionIndex].playerIn}`,
-                    playerOut: `/api/v1/players/${match.lineup.substitutions[substitutionIndex].playerOut}`
+                    playerIn: match.lineup.substitutions[substitutionIndex].playerIn ? `/api/v1/players/${match.lineup.substitutions[substitutionIndex].playerIn}`: null,
+                    playerOut: match.lineup.substitutions[substitutionIndex].playerOut ? `/api/v1/players/${match.lineup.substitutions[substitutionIndex].playerOut}` : null
                 }
             });
         } catch (error) {
