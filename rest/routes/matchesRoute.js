@@ -124,6 +124,8 @@
  *               type: number
  *               minimum: 0
  *               default: 0
+ *         home:
+ *           type: boolean
  *         lineup:
  *           $ref: '#/components/schemas/Lineup'
  *         goals:
@@ -145,65 +147,67 @@
  *               type: string
  *
  *     MatchRequest:
- *       type: object
- *       required:
- *         - season
- *         - competition
- *         - date
- *         - stadium
- *         - opponent
- *         - lineup
- *         - referee
- *       properties:
- *         season:
- *           type: string
- *           format: objectId
- *           description: Reference to Season model
- *         competition:
- *           type: string
- *           format: objectId
- *           description: Reference to Competition model
- *         date:
- *           type: string
- *           format: date-time
- *           description: Match date (cannot be in future)
- *         stadium:
- *           type: string
- *           format: objectId
- *           description: Reference to Stadium model
- *         opponent:
- *           type: object
- *           required:
- *             - name
- *           properties:
- *             name:
- *               type: string
- *             manager:
- *               type: string
- *         score:
- *           type: object
- *           properties:
- *             home:
- *               type: number
- *               minimum: 0
- *               default: 0
- *             away:
- *               type: number
- *               minimum: 0
- *               default: 0
- *         referee:
- *           type: object
- *           required:
- *             - main
- *           properties:
- *             main:
- *               type: string
- *             assistants:
- *               type: array
- *               items:
- *                 type: string
- *             fourth:
- *               type: string
+ *        type: object
+ *        required:
+ *          - season
+ *          - competition
+ *          - date
+ *          - stadium
+ *          - opponent
+ *          - lineup
+ *          - referee
+ *        properties:
+ *          season:
+ *            type: string
+ *            format: objectId
+ *            description: Reference to Season model
+ *          competition:
+ *            type: string
+ *            format: objectId
+ *            description: Reference to Competition model
+ *          date:
+ *            type: string
+ *            format: date-time
+ *            description: Match date (cannot be in future)
+ *          stadium:
+ *            type: string
+ *            format: objectId
+ *            description: Reference to Stadium model
+ *          opponent:
+ *            type: object
+ *            required:
+ *              - name
+ *            properties:
+ *              name:
+ *                type: string
+ *              manager:
+ *                type: string
+ *          score:
+ *            type: object
+ *            properties:
+ *              home:
+ *                type: number
+ *                minimum: 0
+ *                default: 0
+ *              away:
+ *                type: number
+ *                minimum: 0
+ *                default: 0
+ *          home:
+ *            type: boolean
+ *          referee:
+ *            type: object
+ *            required:
+ *              - main
+ *            properties:
+ *              main:
+ *                type: string
+ *              assistants:
+ *                type: array
+ *                items:
+ *                  type: string
+ *              fourth:
+ *                type: string
  *
  *   responses:
  *     MatchResponse:
@@ -227,7 +231,7 @@ import { validateObjectId, validateAllowedFields, validateReferences } from '../
 export const matchesRouter = express.Router();
 
 const ALLOWED_FIELDS = [
-    'season', 'competition', 'date', 'stadium',
+    'season', 'competition', 'date', 'stadium', 'home',
     'opponent', 'opponent.name', 'opponent.manager',
     'score', 'score.home', 'score.away',
     'referee', 'referee.main', 'referee.assistants', 'referee.fourth'
@@ -275,7 +279,6 @@ matchesRouter.get('/', async (req, res) => {
 
         res.setHeader('X-Total-Count', matches.length);
         res.setHeader('X-Resource-Type', 'Match');
-        res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (matches.length === 0) {
             return res.status(204).end();
@@ -327,8 +330,6 @@ matchesRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/MatchResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Match not found
  *       500:
@@ -356,14 +357,8 @@ matchesRouter.get('/:matchId',
                 });
             }
 
-            const etag = `"match-${match._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'Match');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: match,
@@ -437,7 +432,6 @@ matchesRouter.post('/',
 
             res.setHeader('Location', `/api/v1/matches/${newMatch._id}`);
             res.setHeader('X-Resource-Type', 'Match');
-            res.setHeader('X-Resource-Id', newMatch._id.toString());
 
             res.status(201).json({
                 data: newMatch,
@@ -453,9 +447,9 @@ matchesRouter.post('/',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -511,14 +505,7 @@ matchesRouter.put('/:matchId',
     }),
     async (req, res) => {
         try {
-            const match = await Match.findByIdAndUpdate(
-                req.params.matchId,
-                req.body,
-                { new: true, runValidators: true }
-            )
-                .populate('season', 'years')
-                .populate('competition', 'name')
-                .populate('stadium', 'name');
+            const match = await Match.findById(req.params.matchId);
 
             if (!match) {
                 return res.status(404).json({
@@ -527,9 +514,30 @@ matchesRouter.put('/:matchId',
                 });
             }
 
+            const savedFields = {
+                goals: match.goals,
+                lineup: match.lineup
+            };
+
+            ALLOWED_FIELDS.forEach(field => {
+                const [parent, child] = field.split('.');
+                if (child) {
+                    if (!match[parent]) match[parent] = {};
+                    match[parent][child] = undefined;
+                } else {
+                    match[field] = undefined;
+                }
+            });
+
+            Object.assign(match, req.body);
+            match.goals = savedFields.goals;
+            match.lineup = savedFields.lineup;
+
+            await match.save();
+            await match.populate(['season', 'competition', 'stadium']);
+
             res.setHeader('X-Resource-Type', 'Match');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', match._id.toString());
 
             res.status(200).json({
                 data: match,
@@ -545,9 +553,9 @@ matchesRouter.put('/:matchId',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -621,7 +629,6 @@ matchesRouter.patch('/:matchId',
 
             res.setHeader('X-Resource-Type', 'Match');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', match._id.toString());
 
             res.status(200).json({
                 data: match,
@@ -637,9 +644,9 @@ matchesRouter.patch('/:matchId',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -687,7 +694,6 @@ matchesRouter.delete('/:matchId',
             }
 
             res.setHeader('X-Resource-Type', 'Match');
-            res.setHeader('X-Resource-Id', match._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();
@@ -845,14 +851,9 @@ matchesRouter.get('/:matchId/goals/:goalIndex',
             }
 
             const goal = match.goals[goalIndex];
-            const etag = `"goal-${match._id}-${goalIndex}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
 
             res.setHeader('X-Resource-Type', 'Goal');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: goal,
@@ -940,7 +941,6 @@ matchesRouter.post('/:matchId/goals',
 
             res.setHeader('Location', `/api/v1/matches/${match._id}/goals/${newGoalIndex}`);
             res.setHeader('X-Resource-Type', 'Goal');
-            res.setHeader('X-Resource-Id', `${match._id}-goal-${newGoalIndex}`);
 
             res.status(201).json({
                 data: newGoal,
@@ -953,9 +953,9 @@ matchesRouter.post('/:matchId/goals',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1044,7 +1044,6 @@ matchesRouter.put('/:matchId/goals/:goalIndex',
 
             res.setHeader('X-Resource-Type', 'Goal');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', `${match._id}-goal-${goalIndex}`);
 
             res.status(200).json({
                 data: match.goals[goalIndex],
@@ -1059,9 +1058,9 @@ matchesRouter.put('/:matchId/goals/:goalIndex',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1129,7 +1128,6 @@ matchesRouter.delete('/:matchId/goals/:goalIndex',
             await match.save();
 
             res.setHeader('X-Resource-Type', 'Goal');
-            res.setHeader('X-Resource-Id', `${match._id}-goal-${goalIndex}`);
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();
@@ -1187,7 +1185,6 @@ matchesRouter.get('/:matchId/lineup',
 
             res.setHeader('X-Resource-Type', 'Lineup');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', `"lineup-${match._id}"`);
 
             res.status(200).json({
                 data: match.lineup,
@@ -1254,7 +1251,6 @@ matchesRouter.get('/:matchId/lineup/starting',
 
             res.setHeader('X-Resource-Type', 'Starting Lineup');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', `"starting-${match._id}"`);
 
             res.status(200).json({
                 data: match.lineup.starting,
@@ -1332,6 +1328,14 @@ matchesRouter.put('/:matchId/lineup/starting',
                 });
             }
 
+            if (!Array.isArray(req.body) || req.body.length !== 11) {
+                return res.status(400).json({
+                    error: 'Validation Error',
+                    message: 'Starting lineup must contain exactly 11 players',
+                    _links: { match: `/api/v1/matches/${match._id}` }
+                });
+            }
+
             match.lineup.starting = req.body;
             await match.save();
 
@@ -1347,9 +1351,9 @@ matchesRouter.put('/:matchId/lineup/starting',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1408,7 +1412,6 @@ matchesRouter.get('/:matchId/lineup/substitutes',
 
             res.setHeader('X-Resource-Type', 'Substitutes');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', `"substitutes-${match._id}"`);
 
             res.status(200).json({
                 data: match.lineup.substitutes,
@@ -1430,8 +1433,8 @@ matchesRouter.get('/:matchId/lineup/substitutes',
 /**
  * @swagger
  * /matches/{id}/lineup/substitutes:
- *   post:
- *     summary: Add substitute player
+ *   put:
+ *     summary: Update all substitute players
  *     tags: [Lineup]
  *     parameters:
  *       - in: path
@@ -1445,17 +1448,21 @@ matchesRouter.get('/:matchId/lineup/substitutes',
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/LineupPlayer'
+ *             type: array
+ *             items:
+ *               $ref: '#/components/schemas/LineupPlayer'
  *     responses:
- *       201:
- *         description: Substitute added
+ *       200:
+ *         description: Substitutes updated
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/LineupPlayer'
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/LineupPlayer'
  *       400:
  *         description: Validation error
  *       404:
@@ -1463,7 +1470,7 @@ matchesRouter.get('/:matchId/lineup/substitutes',
  *       500:
  *         description: Server error
  */
-matchesRouter.post('/:matchId/lineup/substitutes',
+matchesRouter.put('/:matchId/lineup/substitutes',
     validateObjectId('matchId'),
     validateAllowedFields(ALLOWED_LINEUP_SUBSTITUTE_FIELDS),
     validateReferences({
@@ -1480,27 +1487,32 @@ matchesRouter.post('/:matchId/lineup/substitutes',
                 });
             }
 
-            match.lineup.substitutes.push(req.body);
+            if (!Array.isArray(req.body)) {
+                return res.status(400).json({
+                    error: 'Validation Error',
+                    message: 'Request body must be an array',
+                    _links: { match: `/api/v1/matches/${match._id}` }
+                });
+            }
+
+            match.lineup.substitutes = req.body;
             await match.save();
 
-            const newSubstituteIndex = match.lineup.substitutes.length - 1;
+            res.setHeader('X-Resource-Type', 'Substitutes');
+            res.setHeader('Last-Modified', new Date().toUTCString());
 
-            res.setHeader('X-Resource-Type', 'Substitute');
-            res.setHeader('Location', `/api/v1/matches/${match._id}/lineup/substitutes/${newSubstituteIndex}`);
-
-            res.status(201).json({
-                data: match.lineup.substitutes[newSubstituteIndex],
+            res.status(200).json({
+                data: match.lineup.substitutes,
                 _links: {
-                    self: `/api/v1/matches/${match._id}/lineup/substitutes/${newSubstituteIndex}`,
+                    self: `/api/v1/matches/${match._id}/lineup/substitutes`,
                     match: `/api/v1/matches/${match._id}`,
-                    lineup: `/api/v1/matches/${match._id}/lineup`,
-                    substitutes: `/api/v1/matches/${match._id}/lineup/substitutes`
+                    lineup: `/api/v1/matches/${match._id}/lineup`
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1512,6 +1524,7 @@ matchesRouter.post('/:matchId/lineup/substitutes',
             });
         }
     });
+
 
 /**
  * @swagger
@@ -1660,15 +1673,10 @@ matchesRouter.get('/:matchId/lineup/substitutions/:substitutionIndex',
             }
 
             const substitution = match.lineup.substitutions[substitutionIndex];
-            const etag = `"substitution-${match._id}-${substitutionIndex}"`;
 
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
 
             res.setHeader('X-Resource-Type', 'Substitution');
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: substitution,
@@ -1757,7 +1765,6 @@ matchesRouter.post('/:matchId/lineup/substitutions',
 
             res.setHeader('Location', `/api/v1/matches/${match._id}/lineup/substitutions/${newSubstitutionIndex}`);
             res.setHeader('X-Resource-Type', 'Substitution');
-            res.setHeader('X-Resource-Id', `${match._id}-substitution-${newSubstitutionIndex}`);
 
             res.status(201).json({
                 data: newSubstitution,
@@ -1771,9 +1778,9 @@ matchesRouter.post('/:matchId/lineup/substitutions',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1863,7 +1870,6 @@ matchesRouter.put('/:matchId/lineup/substitutions/:substitutionIndex',
 
             res.setHeader('X-Resource-Type', 'Substitution');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', `${match._id}-substitution-${substitutionIndex}`);
 
             res.status(200).json({
                 data: match.lineup.substitutions[substitutionIndex],
@@ -1877,9 +1883,9 @@ matchesRouter.put('/:matchId/lineup/substitutions/:substitutionIndex',
                 }
             });
         } catch (error) {
-            if (error.name === 'ValidationError') {
+            if (error.name === 'ValidationError' || error.name === 'BusinessLogicError') {
                 return res.status(400).json({
-                    error: 'Validation Error',
+                    error: error.name,
                     message: error.message,
                     _links: { collection: '/api/v1/matches' }
                 });
@@ -1947,7 +1953,6 @@ matchesRouter.delete('/:matchId/lineup/substitutions/:substitutionIndex',
             await match.save();
 
             res.setHeader('X-Resource-Type', 'Substitution');
-            res.setHeader('X-Resource-Id', `${match._id}-substitution-${substitutionIndex}`);
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

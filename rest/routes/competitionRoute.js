@@ -77,10 +77,8 @@ competitionRouter.get('/', async (req, res) => {
     try {
         const competitions = await Competition.find();
 
-        // Custom headers
         res.setHeader('X-Total-Count', competitions.length);
         res.setHeader('X-Resource-Type', 'Competition');
-        res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (competitions.length === 0) {
             return res.status(204).end();
@@ -126,8 +124,6 @@ competitionRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/CompetitionResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Competition not found
  *       500:
@@ -144,15 +140,8 @@ competitionRouter.get('/:competitionId', validateObjectId('competitionId'), asyn
             });
         }
 
-        const etag = `"competition-${competition._id}"`;
-        if (req.headers['if-none-match'] === etag) {
-            return res.status(304).end();
-        }
-
-        // Custom headers
         res.setHeader('X-Resource-Type', 'Competition');
         res.setHeader('Last-Modified', competition.updatedAt.toUTCString());
-        res.setHeader('ETag', etag);
 
         res.status(200).json({
             data: competition,
@@ -207,10 +196,8 @@ competitionRouter.post(
             const newCompetition = new Competition(req.body);
             await newCompetition.save();
 
-            // Custom headers
             res.setHeader('Location', `/api/v1/competitions/${newCompetition._id}`);
             res.setHeader('X-Resource-Type', 'Competition');
-            res.setHeader('X-Resource-Id', newCompetition._id.toString());
 
             res.status(201).json({
                 data: newCompetition,
@@ -273,11 +260,7 @@ competitionRouter.put('/:competitionId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const competition = await Competition.findByIdAndUpdate(
-                req.params.competitionId,
-                req.body,
-                { new: true, runValidators: true }
-            );
+            const competition = await Competition.findById(req.params.competitionId);
 
             if (!competition) {
                 return res.status(404).json({
@@ -286,10 +269,17 @@ competitionRouter.put('/:competitionId',
                 });
             }
 
-            // Custom headers
+            Object.keys(competition.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    competition[key] = undefined;
+                }
+            });
+
+            Object.assign(competition, req.body);
+            await competition.save();
+
             res.setHeader('X-Resource-Type', 'Competition');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', competition._id.toString());
 
             res.status(200).json({
                 data: competition,
@@ -374,7 +364,6 @@ competitionRouter.patch('/:competitionId',
 
             res.setHeader('X-Resource-Type', 'Competition');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', competition._id.toString());
 
             res.status(200).json({
                 data: competition,
@@ -433,7 +422,6 @@ competitionRouter.delete('/:competitionId', validateObjectId('competitionId'), a
 
         // Custom headers
         res.setHeader('X-Resource-Type', 'Competition');
-        res.setHeader('X-Resource-Id', competition._id.toString());
         res.setHeader('X-Deleted-At', new Date().toUTCString());
 
         res.status(204).end();

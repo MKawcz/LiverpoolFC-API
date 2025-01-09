@@ -17,12 +17,13 @@ import { contractRouter } from './routes/contractRoute.js';
 
 const app = express();
 
-// Dozwolone pochodzenie żądań
+//jakie domeny mogą się komunikować z api
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:8989'
 ];
 
+//Weryfikuje każde żądanie - czy pochodzi z dozwolonej domeny. !origin pozwala na żądania z tego samego źródła
 app.use(cors({
     origin: function(origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
@@ -32,32 +33,31 @@ app.use(cors({
         }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    // Headers that clients can send
     allowedHeaders: [
         'Content-Type',
         'Accept',
-        'Authorization',
-        'X-Request-ID',
-        'X-API-Version',
-        'Cache-Control'
+        'If-Modified-Since'
     ],
+    //Headers that api can send to client
     exposedHeaders: [
         'X-Total-Count',
         'X-Resource-Type',
         'X-Resource-Id',
         'Location',
-        'ETag'
+        'Last-Modified',
+        'X-Deleted-At',
+        'X-Request-ID'
     ],
-    credentials: true,
-    maxAge: 86400
+    credentials: true,  // Pozwala na wysyłanie ciasteczek i danych autoryzacji
+    maxAge: 86400       // Jak długo przeglądarka może cachować ustawienia CORS (24h)
 }));
 
-app.use(express.json());
+app.use(express.json());    // Parsuje JSON w ciele żądania
 app.use(addCustomHeaders);
 
-// Połączenie z bazą danych
 connectDB();
 
-// Root endpoint
 app.get('/api/v1', (req, res) => {
     res.json({
         message: 'Welcome to Liverpool FC API',

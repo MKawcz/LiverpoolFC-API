@@ -211,8 +211,6 @@ playersRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/PlayerResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Player not found
  *       500:
@@ -233,14 +231,8 @@ playersRouter.get('/:playerId',
                 });
             }
 
-            const etag = `"player-${player._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'Player');
             res.setHeader('Last-Modified', player.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: player,
@@ -304,12 +296,13 @@ playersRouter.post('/',
 
             res.setHeader('Location', `/api/v1/players/${newPlayer._id}`);
             res.setHeader('X-Resource-Type', 'Player');
-            res.setHeader('X-Resource-Id', newPlayer._id.toString());
 
             res.status(201).json({
                 data: newPlayer,
                 _links: {
                     self: `/api/v1/players/${newPlayer._id}`,
+                    stats: newPlayer.stats ? `/api/v1/player-stats/${newPlayer.stats._id}` : null,
+                    currentContract: newPlayer.currentContract ? `/api/v1/contracts/${newPlayer.currentContract._id}` : null,
                     collection: '/api/v1/players'
                 }
             });
@@ -380,13 +373,7 @@ playersRouter.put('/:playerId',
     }),
     async (req, res) => {
         try {
-            const player = await Player.findByIdAndUpdate(
-                req.params.playerId,
-                req.body,
-                { new: true, runValidators: true }
-            )
-                .populate('stats')
-                .populate('currentContract');
+            const player = await Player.findById(req.params.playerId);
 
             if (!player) {
                 return res.status(404).json({
@@ -395,9 +382,18 @@ playersRouter.put('/:playerId',
                 });
             }
 
+            Object.keys(player.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    player[key] = undefined;
+                }
+            });
+
+            Object.assign(player, req.body);
+            await player.save();
+            await player.populate(['stats', 'currentContract']);
+
             res.setHeader('X-Resource-Type', 'Player');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', player._id.toString());
 
             res.status(200).json({
                 data: player,
@@ -492,7 +488,6 @@ playersRouter.patch('/:playerId',
 
             res.setHeader('X-Resource-Type', 'Player');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', player._id.toString());
 
             res.status(200).json({
                 data: player,
@@ -561,7 +556,6 @@ playersRouter.delete('/:playerId',
             }
 
             res.setHeader('X-Resource-Type', 'Player');
-            res.setHeader('X-Resource-Id', player._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

@@ -148,8 +148,6 @@ seasonRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/SeasonResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Season not found
  *       500:
@@ -170,14 +168,8 @@ seasonRouter.get('/:seasonId',
                 });
             }
 
-            const etag = `"season-${season._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'Season');
             res.setHeader('Last-Modified', season.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: season,
@@ -241,7 +233,6 @@ seasonRouter.post('/',
 
             res.setHeader('Location', `/api/v1/seasons/${newSeason._id}`);
             res.setHeader('X-Resource-Type', 'Season');
-            res.setHeader('X-Resource-Id', newSeason._id.toString());
 
             res.status(201).json({
                 data: newSeason,
@@ -319,13 +310,7 @@ seasonRouter.put('/:seasonId',
     }),
     async (req, res) => {
         try {
-            const season = await Season.findByIdAndUpdate(
-                req.params.seasonId,
-                req.body,
-                { new: true, runValidators: true }
-            )
-                .populate('manager', 'name')
-                .populate('trophies');
+            const season = await Season.findById(req.params.seasonId);
 
             if (!season) {
                 return res.status(404).json({
@@ -334,9 +319,18 @@ seasonRouter.put('/:seasonId',
                 });
             }
 
+            Object.keys(season.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    season[key] = undefined;
+                }
+            });
+
+            Object.assign(season, req.body);
+            await season.save();
+            await season.populate(['manager', 'trophies']);
+
             res.setHeader('X-Resource-Type', 'Season');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', season._id.toString());
 
             res.status(200).json({
                 data: season,
@@ -446,7 +440,6 @@ seasonRouter.patch('/:seasonId',
 
             res.setHeader('X-Resource-Type', 'Season');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', season._id.toString());
 
             res.status(200).json({
                 data: season,
@@ -515,7 +508,6 @@ seasonRouter.delete('/:seasonId',
             }
 
             res.setHeader('X-Resource-Type', 'Season');
-            res.setHeader('X-Resource-Id', season._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

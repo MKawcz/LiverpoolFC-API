@@ -50,7 +50,6 @@ import { validateObjectId, validateAllowedFields } from '../middleware/validator
 
 export const managersRouter = express.Router();
 
-// Definiujemy dozwolone pola na podstawie schematu
 const ALLOWED_FIELDS = [
     'name',
     'nationality',
@@ -90,10 +89,8 @@ managersRouter.get('/', async (req, res) => {
     try {
         const managers = await Manager.find();
 
-        // Custom headers
         res.setHeader('X-Total-Count', managers.length);
         res.setHeader('X-Resource-Type', 'Manager');
-        res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (managers.length === 0) {
             return res.status(204).end();
@@ -140,8 +137,6 @@ managersRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/ManagerResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Manager not found
  *       500:
@@ -158,15 +153,8 @@ managersRouter.get('/:managerId', validateObjectId('managerId'), async (req, res
             });
         }
 
-        const etag = `"manager-${manager._id}"`;
-        if (req.headers['if-none-match'] === etag) {
-            return res.status(304).end();
-        }
-
-        // Custom headers
         res.setHeader('X-Resource-Type', 'Manager');
         res.setHeader('Last-Modified', manager.updatedAt.toUTCString());
-        res.setHeader('ETag', etag);
 
         res.status(200).json({
             data: manager,
@@ -220,10 +208,8 @@ managersRouter.post('/',
             const newManager = new Manager(req.body);
             await newManager.save();
 
-            // Custom headers
             res.setHeader('Location', `/api/v1/managers/${newManager._id}`);
             res.setHeader('X-Resource-Type', 'Manager');
-            res.setHeader('X-Resource-Id', newManager._id.toString());
 
             res.status(201).json({
                 data: newManager,
@@ -286,11 +272,7 @@ managersRouter.put('/:managerId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const manager = await Manager.findByIdAndUpdate(
-                req.params.managerId,
-                req.body,
-                { new: true, runValidators: true }
-            );
+            const manager = await Manager.findById(req.params.managerId);
 
             if (!manager) {
                 return res.status(404).json({
@@ -299,10 +281,17 @@ managersRouter.put('/:managerId',
                 });
             }
 
-            // Custom headers
+            Object.keys(manager.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    manager[key] = undefined;
+                }
+            });
+
+            Object.assign(manager, req.body);
+            await manager.save();
+
             res.setHeader('X-Resource-Type', 'Manager');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', manager._id.toString());
 
             res.status(200).json({
                 data: manager,
@@ -389,10 +378,8 @@ managersRouter.patch('/:managerId',
                 });
             }
 
-            // Custom headers
             res.setHeader('X-Resource-Type', 'Manager');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', manager._id.toString());
 
             res.status(200).json({
                 data: manager,
@@ -449,9 +436,7 @@ managersRouter.delete('/:managerId', validateObjectId('managerId'), async (req, 
             });
         }
 
-        // Custom headers
         res.setHeader('X-Resource-Type', 'Manager');
-        res.setHeader('X-Resource-Id', manager._id.toString());
         res.setHeader('X-Deleted-At', new Date().toUTCString());
 
         res.status(204).end();

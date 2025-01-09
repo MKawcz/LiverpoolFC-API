@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { get } from 'lodash';
+import get from 'lodash/get.js';
 
 export const validateObjectId = (paramName) => (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(req.params[paramName])) {
@@ -39,23 +39,24 @@ export const validateReferences = (validations) => async (req, res, next) => {
         const notFoundErrors = [];
 
         for (const [path, modelName] of Object.entries(validations)) {
-            const value = get(req.body, path);
+            const value = Array.isArray(req.body)
+                ? req.body.map(item => get(item, path))
+                : get(req.body, path);
+
             if (!value) continue;
 
             const ids = Array.isArray(value)
-                ? value.map(item => item?.player || item).filter(Boolean)
+                ? value.filter(Boolean)
                 : [value];
 
             if (ids.length === 0) continue;
 
-            // Check format first
             const invalidFormatIds = ids.filter(id => !mongoose.Types.ObjectId.isValid(id));
             if (invalidFormatIds.length > 0) {
                 formatErrors.push(`Invalid ID format in ${path}: ${invalidFormatIds.join(', ')}`);
                 continue;
             }
 
-            // If format is valid, check existence
             const Model = mongoose.model(modelName);
             const existingDocs = await Model.find({ _id: { $in: ids } }, '_id');
             const existingIds = existingDocs.map(doc => doc._id.toString());
@@ -66,7 +67,6 @@ export const validateReferences = (validations) => async (req, res, next) => {
             }
         }
 
-        // Return format errors first if any
         if (formatErrors.length > 0) {
             return res.status(400).json({
                 error: 'Invalid ID Format',
@@ -75,7 +75,6 @@ export const validateReferences = (validations) => async (req, res, next) => {
             });
         }
 
-        // Then return not found errors if any
         if (notFoundErrors.length > 0) {
             return res.status(404).json({
                 error: 'References Not Found',

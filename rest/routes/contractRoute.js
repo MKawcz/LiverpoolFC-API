@@ -143,10 +143,8 @@ contractRouter.get('/', async (req, res) => {
     try {
         const contracts = await Contract.find();
 
-        // Custom headers
         res.setHeader('X-Total-Count', contracts.length);
         res.setHeader('X-Resource-Type', 'Contract');
-        res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (contracts.length === 0) {
             return res.status(204).end();
@@ -192,8 +190,6 @@ contractRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/ContractResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Contract not found
  *       500:
@@ -210,15 +206,8 @@ contractRouter.get('/:contractId', validateObjectId('contractId'), async (req, r
             });
         }
 
-        const etag = `"contract-${contract._id}"`;
-        if (req.headers['if-none-match'] === etag) {
-            return res.status(304).end();
-        }
-
-        // Custom headers
         res.setHeader('X-Resource-Type', 'Contract');
         res.setHeader('Last-Modified', contract.updatedAt.toUTCString());
-        res.setHeader('ETag', etag);
 
         res.status(200).json({
             data: contract,
@@ -270,7 +259,6 @@ contractRouter.post('/', validateAllowedFields(ALLOWED_FIELDS), async (req, res)
         const newContract = new Contract(req.body);
         await newContract.save();
 
-        // Custom headers
         res.setHeader('Location', `/api/v1/contracts/${newContract._id}`);
         res.setHeader('X-Resource-Type', 'Contract');
         res.setHeader('X-Resource-Id', newContract._id.toString());
@@ -345,13 +333,22 @@ contractRouter.put('/:contractId',
                 });
             }
 
-            Object.assign(contract, req.body);
+            const bonuses = contract.bonuses;
+            ALLOWED_FIELDS.forEach(field => {
+                const [parent, child] = field.split('.');
+                if (child) {
+                    contract[parent][child] = undefined;
+                } else {
+                    contract[field] = undefined;
+                }
+            });
 
+            Object.assign(contract, req.body);
+            contract.bonuses = bonuses;
             await contract.save();
 
             res.setHeader('X-Resource-Type', 'Contract');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', contract._id.toString());
 
             res.status(200).json({
                 data: contract,
@@ -437,7 +434,6 @@ contractRouter.patch('/:contractId',
 
             res.setHeader('X-Resource-Type', 'Contract');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', contract._id.toString());
 
             res.status(200).json({
                 data: contract,
@@ -494,9 +490,7 @@ contractRouter.delete('/:contractId', validateObjectId('contractId'), async (req
             });
         }
 
-        // Custom headers
         res.setHeader('X-Resource-Type', 'Contract');
-        res.setHeader('X-Resource-Id', contract._id.toString());
         res.setHeader('X-Deleted-At', new Date().toUTCString());
 
         res.status(204).end();
@@ -559,7 +553,6 @@ contractRouter.get('/:contractId/bonuses',
                 });
             }
 
-            // Custom headers
             res.setHeader('X-Total-Count', contract.bonuses.length);
             res.setHeader('X-Resource-Type', 'Bonus');
             res.setHeader('Last-Modified', contract.updatedAt.toUTCString());
@@ -652,7 +645,6 @@ contractRouter.get('/:contractId/bonuses/:bonusIndex',
 
             res.setHeader('X-Resource-Type', 'Bonus');
             res.setHeader('Last-Modified', contract.updatedAt.toUTCString());
-            res.setHeader('ETag', `"bonus-${contract._id}-${bonusIndex}"`);
 
             res.status(200).json({
                 data: bonus,
@@ -734,7 +726,6 @@ contractRouter.post('/:contractId/bonuses',
 
             res.setHeader('Location', `/api/v1/contracts/${contract._id}/bonuses/${newBonusIndex}`);
             res.setHeader('X-Resource-Type', 'Bonus');
-            res.setHeader('X-Resource-Id', `${contract._id}-${newBonusIndex}`);
 
             res.status(201).json({
                 data: newBonus,
@@ -832,7 +823,6 @@ contractRouter.put('/:contractId/bonuses/:bonusIndex',
 
             res.setHeader('X-Resource-Type', 'Bonus');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', `${contract._id}-${bonusIndex}`);
 
             res.status(200).json({
                 data: contract.bonuses[bonusIndex],
@@ -913,7 +903,6 @@ contractRouter.delete('/:contractId/bonuses/:bonusIndex',
             await contract.save();
 
             res.setHeader('X-Resource-Type', 'Bonus');
-            res.setHeader('X-Resource-Id', `${contract._id}-${bonusIndex}`);
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

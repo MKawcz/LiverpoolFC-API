@@ -126,8 +126,6 @@ stadiumsRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/StadiumResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Stadium not found
  *       500:
@@ -146,14 +144,8 @@ stadiumsRouter.get('/:stadiumId',
                 });
             }
 
-            const etag = `"stadium-${stadium._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'Stadium');
             res.setHeader('Last-Modified', stadium.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: stadium,
@@ -211,7 +203,6 @@ stadiumsRouter.post('/',
 
             res.setHeader('Location', `/api/v1/stadiums/${newStadium._id}`);
             res.setHeader('X-Resource-Type', 'Stadium');
-            res.setHeader('X-Resource-Id', newStadium._id.toString());
 
             res.status(201).json({
                 data: newStadium,
@@ -283,11 +274,7 @@ stadiumsRouter.put('/:stadiumId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const stadium = await Stadium.findByIdAndUpdate(
-                req.params.stadiumId,
-                req.body,
-                { new: true, runValidators: true }
-            );
+            const stadium = await Stadium.findById(req.params.stadiumId);
 
             if (!stadium) {
                 return res.status(404).json({
@@ -296,9 +283,17 @@ stadiumsRouter.put('/:stadiumId',
                 });
             }
 
+            Object.keys(stadium.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    stadium[key] = undefined;
+                }
+            });
+
+            Object.assign(stadium, req.body);
+            await stadium.save();
+
             res.setHeader('X-Resource-Type', 'Stadium');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', stadium._id.toString());
 
             res.status(200).json({
                 data: stadium,
@@ -397,7 +392,6 @@ stadiumsRouter.patch('/:stadiumId',
 
             res.setHeader('X-Resource-Type', 'Stadium');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', stadium._id.toString());
 
             res.status(200).json({
                 data: stadium,
@@ -464,7 +458,6 @@ stadiumsRouter.delete('/:stadiumId',
             }
 
             res.setHeader('X-Resource-Type', 'Stadium');
-            res.setHeader('X-Resource-Id', stadium._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

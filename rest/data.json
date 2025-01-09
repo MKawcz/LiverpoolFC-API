@@ -19,7 +19,7 @@
   "managers": [
     {
       "name": "Arne Slot",
-      "nationality": "Netherlands",
+      "nationality": "Dutch",
       "dateOfBirth": "1971-01-18",
       "status": "ACTIVE"
     },
@@ -32,7 +32,7 @@
     {
       "name": "Brendan Rodgers",
       "nationality": "English",
-      "dateOfBirth": "1982-03-26",
+      "dateOfBirth": "1973-03-26",
       "status": "INACTIVE"
     }
   ],
@@ -66,7 +66,329 @@
       "tackles": 15,
       "interceptions": 20,
       "clearances": 10,
-      "cleanSheets": 0,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },{
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
+      "saves": 0,
+      "cards": {
+        "yellow": 4,
+        "red": 0
+      }
+    },
+    {
+      "appearances": 38,
+      "minutesPlayed": 3420,
+      "goals": {
+        "total": 25,
+        "penalties": 3,
+        "freeKicks": 1
+      },
+      "assists": 10,
+      "tackles": 15,
+      "interceptions": 20,
+      "clearances": 10,
+      "cleanSheets": 5,
       "saves": 0,
       "cards": {
         "yellow": 4,
@@ -85,8 +407,8 @@
       "tackles": 85,
       "interceptions": 120,
       "clearances": 200,
-      "cleanSheets": 15,
-      "saves": 125,
+      "cleanSheets": 18,
+      "saves": 140,
       "cards": {
         "yellow": 2,
         "red": 0
@@ -117,7 +439,344 @@
       "start": "2023-07-01",
       "end": "2027-06-30",
       "salary": {
-        "base": 300000,
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2026-06-30",
+      "salary": {
+        "base": 280000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "CLEAN_SHEET",
+          "amount": 12000
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },{
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2027-06-30",
+      "salary": {
+        "base": 350000,
+        "currency": "GBP"
+      },
+      "bonuses": [
+        {
+          "type": "GOAL",
+          "amount": 6000
+        },
+        {
+          "type": "ASSIST",
+          "amount": 3500
+        }
+      ]
+    },
+    {
+      "start": "2023-07-01",
+      "end": "2028-06-30",
+      "salary": {
+        "base": 320000,
         "currency": "GBP"
       },
       "bonuses": [
@@ -128,38 +787,6 @@
         {
           "type": "ASSIST",
           "amount": 3000
-        }
-      ]
-    },
-    {
-      "start": "2023-07-01",
-      "end": "2026-06-30",
-      "salary": {
-        "base": 250000,
-        "currency": "GBP"
-      },
-      "bonuses": [
-        {
-          "type": "CLEAN_SHEET",
-          "amount": 10000
-        }
-      ]
-    },
-    {
-      "start": "2023-07-01",
-      "end": "2028-06-30",
-      "salary": {
-        "base": 280000,
-        "currency": "GBP"
-      },
-      "bonuses": [
-        {
-          "type": "GOAL",
-          "amount": 4000
-        },
-        {
-          "type": "ASSIST",
-          "amount": 2500
         }
       ]
     }
@@ -179,7 +806,7 @@
       "status": "ACTIVE",
       "jerseyNumber": 11,
       "marketValue": {
-        "value": 180000000,
+        "value": 150000000,
         "currency": "EUR"
       }
     },
@@ -197,7 +824,7 @@
       "status": "ACTIVE",
       "jerseyNumber": 1,
       "marketValue": {
-        "value": 35000000,
+        "value": 45000000,
         "currency": "EUR"
       }
     },
@@ -207,15 +834,231 @@
         "last": "Van Dijk",
         "displayName": "Van Dijk"
       },
-      "position": "MID",
-      "nationality": "Netherlands",
-      "dateOfBirth": "2001-09-05",
+      "position": "DEF",
+      "nationality": "Dutch",
+      "dateOfBirth": "1991-09-05",
+      "height": 188,
+      "weight": 84,
+      "status": "ACTIVE",
+      "jerseyNumber": 4,
+      "marketValue": {
+        "value": 120000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Luis",
+        "last": "Diaz",
+        "displayName": "Diaz"
+      },
+      "position": "FWD",
+      "nationality": "Colombian",
+      "dateOfBirth": "1997-01-13",
       "height": 178,
-      "weight": 72,
+      "weight": 70,
+      "status": "ACTIVE",
+      "jerseyNumber": 23,
+      "marketValue": {
+        "value": 45000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Jordan",
+        "last": "Henderson",
+        "displayName": "Henderson"
+      },
+      "position": "MID",
+      "nationality": "English",
+      "dateOfBirth": "1990-06-17",
+      "height": 182,
+      "weight": 76,
+      "status": "ACTIVE",
+      "jerseyNumber": 14,
+      "marketValue": {
+        "value": 12000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Darwin",
+        "last": "Nunez",
+        "displayName": "Nunez"
+      },
+      "position": "FWD",
+      "nationality": "Uruguayan",
+      "dateOfBirth": "1999-06-24",
+      "height": 187,
+      "weight": 77,
+      "status": "ACTIVE",
+      "jerseyNumber": 27,
+      "marketValue": {
+        "value": 80000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "James",
+        "last": "Milner",
+        "displayName": "Milner"
+      },
+      "position": "MID",
+      "nationality": "English",
+      "dateOfBirth": "1986-01-04",
+      "height": 175,
+      "weight": 70,
       "status": "ACTIVE",
       "jerseyNumber": 7,
       "marketValue": {
-        "value": 120000000,
+        "value": 5000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Thiago",
+        "last": "Alcantara",
+        "displayName": "Thiago"
+      },
+      "position": "MID",
+      "nationality": "Spanish",
+      "dateOfBirth": "1991-04-11",
+      "height": 174,
+      "weight": 71,
+      "status": "ACTIVE",
+      "jerseyNumber": 6,
+      "marketValue": {
+        "value": 35000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Fabinho",
+        "last": "Tavares",
+        "displayName": "Fabinho"
+      },
+      "position": "MID",
+      "nationality": "Brazilian",
+      "dateOfBirth": "1993-10-23",
+      "height": 188,
+      "weight": 80,
+      "status": "ACTIVE",
+      "jerseyNumber": 3,
+      "marketValue": {
+        "value": 40000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Joe",
+        "last": "Gomez",
+        "displayName": "Gomez"
+      },
+      "position": "DEF",
+      "nationality": "English",
+      "dateOfBirth": "1997-05-23",
+      "height": 182,
+      "weight": 75,
+      "status": "ACTIVE",
+      "jerseyNumber": 12,
+      "marketValue": {
+        "value": 25000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Joel",
+        "last": "Matip",
+        "displayName": "Matip"
+      },
+      "position": "DEF",
+      "nationality": "Cameroonian",
+      "dateOfBirth": "1991-08-08",
+      "height": 195,
+      "weight": 90,
+      "status": "ACTIVE",
+      "jerseyNumber": 32,
+      "marketValue": {
+        "value": 15000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Kostas",
+        "last": "Tsimikas",
+        "displayName": "Tsimikas"
+      },
+      "position": "DEF",
+      "nationality": "Greek",
+      "dateOfBirth": "1996-05-12",
+      "height": 180,
+      "weight": 70,
+      "status": "ACTIVE",
+      "jerseyNumber": 21,
+      "marketValue": {
+        "value": 8000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Caoimhin",
+        "last": "Kelleher",
+        "displayName": "Kelleher"
+      },
+      "position": "GK",
+      "nationality": "Irish",
+      "dateOfBirth": "1998-11-23",
+      "height": 193,
+      "weight": 80,
+      "status": "ACTIVE",
+      "jerseyNumber": 62,
+      "marketValue": {
+        "value": 1500000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Curtis",
+        "last": "Jones",
+        "displayName": "Jones"
+      },
+      "position": "MID",
+      "nationality": "English",
+      "dateOfBirth": "2001-01-30",
+      "height": 183,
+      "weight": 72,
+      "status": "ACTIVE",
+      "jerseyNumber": 17,
+      "marketValue": {
+        "value": 15000000,
+        "currency": "EUR"
+      }
+    },
+    {
+      "name": {
+        "first": "Ben",
+        "last": "Doak",
+        "displayName": "Doak"
+      },
+      "position": "FWD",
+      "nationality": "Scottish",
+      "dateOfBirth": "2005-11-11",
+      "height": 174,
+      "weight": 69,
+      "status": "ACTIVE",
+      "jerseyNumber": 50,
+      "marketValue": {
+        "value": 10000000,
         "currency": "EUR"
       }
     }

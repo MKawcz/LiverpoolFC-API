@@ -196,8 +196,6 @@ playerStatsRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/PlayerStatsResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Player stats not found
  *       500:
@@ -216,14 +214,8 @@ playerStatsRouter.get('/:statsId',
                 });
             }
 
-            const etag = `"stats-${stats._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'PlayerStats');
             res.setHeader('Last-Modified', stats.updatedAt?.toUTCString() || new Date().toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: stats,
@@ -279,7 +271,6 @@ playerStatsRouter.post('/',
 
             res.setHeader('Location', `/api/v1/player-stats/${newStats._id}`);
             res.setHeader('X-Resource-Type', 'PlayerStats');
-            res.setHeader('X-Resource-Id', newStats._id.toString());
 
             res.status(201).json({
                 data: newStats,
@@ -342,11 +333,7 @@ playerStatsRouter.put('/:statsId',
     validateAllowedFields(ALLOWED_FIELDS),
     async (req, res) => {
         try {
-            const stats = await PlayerStats.findByIdAndUpdate(
-                req.params.statsId,
-                req.body,
-                { new: true, runValidators: true }
-            );
+            const stats = await PlayerStats.findById(req.params.statsId);
 
             if (!stats) {
                 return res.status(404).json({
@@ -355,9 +342,17 @@ playerStatsRouter.put('/:statsId',
                 });
             }
 
+            Object.keys(stats.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    stats[key] = undefined;
+                }
+            });
+
+            Object.assign(stats, req.body);
+            await stats.save();
+
             res.setHeader('X-Resource-Type', 'PlayerStats');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', stats._id.toString());
 
             res.status(200).json({
                 data: stats,
@@ -468,7 +463,6 @@ playerStatsRouter.patch('/:statsId',
 
             res.setHeader('X-Resource-Type', 'PlayerStats');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', stats._id.toString());
 
             res.status(200).json({
                 data: stats,
@@ -528,7 +522,6 @@ playerStatsRouter.delete('/:statsId',
             }
 
             res.setHeader('X-Resource-Type', 'PlayerStats');
-            res.setHeader('X-Resource-Id', stats._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();

@@ -33,7 +33,7 @@
  *           description: Reference to Competition model
  *         wonDate:
  *           type: string
- *           format: date-time
+ *           format: date
  *           description: Date when trophy was won (cannot be in future)
  *         prizes:
  *           $ref: '#/components/schemas/Prizes'
@@ -146,8 +146,6 @@ trophiesRouter.get('/', async (req, res) => {
  *           application/json:
  *             schema:
  *               $ref: '#/components/responses/TrophyResponse'
- *       304:
- *         description: Not modified (ETag matched)
  *       404:
  *         description: Trophy not found
  *       500:
@@ -167,14 +165,8 @@ trophiesRouter.get('/:trophyId',
                 });
             }
 
-            const etag = `"trophy-${trophy._id}"`;
-            if (req.headers['if-none-match'] === etag) {
-                return res.status(304).end();
-            }
-
             res.setHeader('X-Resource-Type', 'Trophy');
             res.setHeader('Last-Modified', trophy.updatedAt.toUTCString());
-            res.setHeader('ETag', etag);
 
             res.status(200).json({
                 data: trophy,
@@ -234,13 +226,12 @@ trophiesRouter.post('/',
 
             res.setHeader('Location', `/api/v1/trophies/${newTrophy._id}`);
             res.setHeader('X-Resource-Type', 'Trophy');
-            res.setHeader('X-Resource-Id', newTrophy._id.toString());
 
             res.status(201).json({
                 data: newTrophy,
                 _links: {
                     self: `/api/v1/trophies/${newTrophy._id}`,
-                    competition: trophy.competition ? `/api/v1/competitions/${newTrophy.competition}` : null,
+                    competition: newTrophy.competition ? `/api/v1/competitions/${newTrophy.competition}` : null,
                     collection: '/api/v1/trophies'
                 }
             });
@@ -301,11 +292,7 @@ trophiesRouter.put('/:trophyId',
     }),
     async (req, res) => {
         try {
-            const trophy = await Trophy.findByIdAndUpdate(
-                req.params.trophyId,
-                req.body,
-                { new: true, runValidators: true }
-            ).populate('competition', 'name type');
+            const trophy = await Trophy.findById(req.params.trophyId);
 
             if (!trophy) {
                 return res.status(404).json({
@@ -314,9 +301,18 @@ trophiesRouter.put('/:trophyId',
                 });
             }
 
+            Object.keys(trophy.toObject()).forEach(key => {
+                if (key !== '_id' && key !== '__v') {
+                    trophy[key] = undefined;
+                }
+            })
+
+            Object.assign(trophy, req.body);
+            await trophy.save();
+            await trophy.populate(['competition']);
+
             res.setHeader('X-Resource-Type', 'Trophy');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', trophy._id.toString());
 
             res.status(200).json({
                 data: trophy,
@@ -417,7 +413,6 @@ trophiesRouter.patch('/:trophyId',
 
             res.setHeader('X-Resource-Type', 'Trophy');
             res.setHeader('Last-Modified', new Date().toUTCString());
-            res.setHeader('X-Resource-Id', trophy._id.toString());
 
             res.status(200).json({
                 data: trophy,
@@ -478,7 +473,6 @@ trophiesRouter.delete('/:trophyId',
             }
 
             res.setHeader('X-Resource-Type', 'Trophy');
-            res.setHeader('X-Resource-Id', trophy._id.toString());
             res.setHeader('X-Deleted-At', new Date().toUTCString());
 
             res.status(204).end();
