@@ -281,7 +281,7 @@ matchesRouter.get('/', async (req, res) => {
         res.setHeader('X-Resource-Type', 'Match');
 
         if (matches.length === 0) {
-            return res.status(204).end();
+            return res.status(204).end();//wymien 404
         }
 
         res.status(200).json({

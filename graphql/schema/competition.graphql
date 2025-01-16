@@ -1,0 +1,42 @@
+type Competition {
+    id: ID!
+    name: String!
+    type: CompetitionType!
+    yearOfCreation: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+enum CompetitionType {
+    LEAGUE
+    CUP
+    FRIENDLY
+}
+
+input CompetitionInput {
+    name: String!
+    type: CompetitionType!
+    yearOfCreation: Int!
+}
+
+input CompetitionFilter {
+    name: StringFilter
+    type: CompetitionType
+    yearOfCreation: NumberFilter
+}
+
+extend type Query {
+    competitions(
+        filter: CompetitionFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Competition!]!
+
+    competition(id: ID!): Competition
+}
+
+extend type Mutation {
+    createCompetition(input: CompetitionInput!): Competition!
+    updateCompetition(id: ID!, input: CompetitionInput!): Competition!
+    deleteCompetition(id: ID!): Boolean!
+}

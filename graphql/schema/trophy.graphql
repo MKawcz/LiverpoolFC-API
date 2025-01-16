@@ -1,0 +1,44 @@
+type Trophy {
+    id: ID!
+    competition: Competition!
+    wonDate: DateTime!
+    prizes: Prizes!
+}
+
+type Prizes {
+    winner: Float!
+    runnerUp: Float
+    thirdPlace: Float
+}
+
+input TrophyInput {
+    competition: ID!
+    wonDate: DateTime!
+    prizes: PrizesInput!
+}
+
+input PrizesInput {
+    winner: Float!
+    runnerUp: Float
+    thirdPlace: Float
+}
+
+input TrophyFilter {
+    competition: ID
+    wonDate: DateTimeFilter
+}
+
+extend type Query {
+    trophies(
+        filter: TrophyFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Trophy!]!
+    trophy(id: ID!): Trophy
+}
+
+extend type Mutation {
+    createTrophy(input: TrophyInput!): Trophy!
+    updateTrophy(id: ID!, input: TrophyInput!): Trophy!
+    deleteTrophy(id: ID!): Boolean!
+}

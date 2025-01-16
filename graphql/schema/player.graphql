@@ -1,0 +1,87 @@
+type Player {
+    id: ID!
+    name: PlayerName!
+    position: Position!
+    nationality: String!
+    dateOfBirth: DateTime!
+    height: Int
+    weight: Int
+    status: PlayerStatus!
+    jerseyNumber: Int!
+    marketValue: MarketValue!
+    currentContract: Contract
+    stats: PlayerStats
+}
+
+type PlayerName {
+    first: String!
+    last: String!
+    displayName: String
+}
+
+type MarketValue {
+    value: Float!
+    currency: Currency!
+    date: DateTime!
+}
+
+enum PlayerStatus {
+    ACTIVE
+    INJURED
+    SUSPENDED
+    ON_LOAN
+    INACTIVE
+}
+
+enum Position {
+    GK
+    DEF
+    MID
+    FWD
+}
+
+input PlayerInput {
+    name: PlayerNameInput!
+    position: Position!
+    nationality: String!
+    dateOfBirth: DateTime!
+    height: Int
+    weight: Int
+    jerseyNumber: Int!
+    marketValue: MarketValueInput!
+}
+
+input PlayerNameInput {
+    first: String!
+    last: String!
+    displayName: String
+}
+
+input MarketValueInput {
+    value: Float!
+    currency: Currency!
+}
+
+input PlayerFilter {
+    "Filtrowanie po imieniu lub nazwisku"
+    name: StringFilter
+    position: Position
+    nationality: StringFilter
+    status: PlayerStatus
+    jerseyNumber: NumberFilter
+}
+
+extend type Query {
+    players(
+        filter: PlayerFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Player!]!
+    player(id: ID!): Player
+}
+
+extend type Mutation {
+    createPlayer(input: PlayerInput!): Player!
+    updatePlayer(id: ID!, input: PlayerInput!): Player!
+    deletePlayer(id: ID!): Boolean!
+}

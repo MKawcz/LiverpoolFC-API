@@ -1,0 +1,36 @@
+type Stadium {
+    id: ID!
+    name: String!
+    capacity: Int!
+    location: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+input StadiumInput {
+    name: String!
+    capacity: Int!
+    location: String!
+}
+
+input StadiumFilter {
+    name: StringFilter
+    capacity: NumberFilter
+    location: StringFilter
+}
+
+extend type Query {
+    stadiums(
+        filter: StadiumFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Stadium!]!
+
+    stadium(id: ID!): Stadium
+}
+
+extend type Mutation {
+    createStadium(input: StadiumInput!): Stadium!
+    updateStadium(id: ID!, input: StadiumInput!): Stadium!
+    deleteStadium(id: ID!): Boolean!
+}

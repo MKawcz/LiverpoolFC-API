@@ -1,0 +1,40 @@
+type Season {
+    id: ID!
+    years: String!
+    trophies: [Trophy!]
+    manager: Manager!
+    status: SeasonStatus!
+}
+
+enum SeasonStatus {
+    UPCOMING
+    IN_PROGRESS
+    FINISHED
+}
+
+input SeasonInput {
+    years: String!
+    manager: ID!
+    status: SeasonStatus!
+}
+
+input SeasonFilter {
+    years: StringFilter
+    manager: ID
+    status: SeasonStatus
+}
+
+extend type Query {
+    seasons(
+        filter: SeasonFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Season!]!
+    season(id: ID!): Season
+}
+
+extend type Mutation {
+    createSeason(input: SeasonInput!): Season!
+    updateSeason(id: ID!, input: SeasonInput!): Season!
+    deleteSeason(id: ID!): Boolean!
+}

@@ -1,0 +1,44 @@
+type Manager {
+    id: ID!
+    name: String!
+    nationality: String!
+    dateOfBirth: DateTime!
+    status: ManagerStatus!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+}
+
+enum ManagerStatus {
+    ACTIVE
+    INACTIVE
+    SUSPENDED
+}
+
+input ManagerInput {
+    name: String!
+    nationality: String!
+    dateOfBirth: DateTime!
+    status: ManagerStatus
+}
+
+input ManagerFilter {
+    name: StringFilter
+    nationality: StringFilter
+    status: ManagerStatus
+}
+
+extend type Query {
+    managers(
+        filter: ManagerFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Manager!]!
+
+    manager(id: ID!): Manager
+}
+
+extend type Mutation {
+    createManager(input: ManagerInput!): Manager!
+    updateManager(id: ID!, input: ManagerInput!): Manager!
+    deleteManager(id: ID!): Boolean!
+}

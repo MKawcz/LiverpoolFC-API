@@ -1,0 +1,102 @@
+
+type Match {
+    id: ID!
+    season: Season!
+    competition: Competition!
+    date: DateTime!
+    stadium: Stadium!
+    opponent: Opponent!
+    score: Score
+    home: Boolean!
+    lineup: Lineup!
+    goals: [Goal!]
+    referee: Referee!
+}
+
+type Opponent {
+    name: String!
+    manager: String
+}
+
+type Score {
+    home: Int!
+    away: Int!
+}
+
+type Lineup {
+    starting: [LineupPlayer!]!
+    substitutes: [LineupPlayer!]!
+    substitutions: [Substitution!]!
+}
+
+type LineupPlayer {
+    player: Player!
+}
+
+type Substitution {
+    playerIn: Player!
+    playerOut: Player!
+    minute: Int!
+}
+
+type Goal {
+    scorer: Player!
+    assistant: Player
+    minute: Int!
+    description: String
+}
+
+type Referee {
+    main: String!
+    assistants: [String!]
+    fourth: String
+}
+
+# Input types dla tworzenia/aktualizacji
+input MatchInput {
+    season: ID!
+    competition: ID!
+    date: DateTime!
+    stadium: ID!
+    opponent: OpponentInput!
+    home: Boolean!
+    referee: RefereeInput!
+}
+
+input OpponentInput {
+    name: String!
+    manager: String
+}
+
+input RefereeInput {
+    main: String!
+    assistants: [String!]
+    fourth: String
+}
+
+# Typ filtrujący dla meczu
+input MatchFilter {
+    season: ID
+    competition: ID
+    date: DateTimeFilter
+    stadium: ID
+    opponentName: StringFilter
+    home: Boolean
+}
+
+# Query i Mutation dla meczów
+type Query {
+    matches(
+        filter: MatchFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Match!]!
+
+    match(id: ID!): Match
+}
+
+type Mutation {
+    createMatch(input: MatchInput!): Match!
+    updateMatch(id: ID!, input: MatchInput!): Match!
+    deleteMatch(id: ID!): Boolean!
+}

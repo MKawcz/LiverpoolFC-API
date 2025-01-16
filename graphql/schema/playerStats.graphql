@@ -1,0 +1,90 @@
+type PlayerStats {
+    appearances: Int!
+    minutesPlayed: Int!
+    goals: GoalStats!
+    assists: Int!
+    tackles: Int!
+    interceptions: Int!
+    clearances: Int!
+    cleanSheets: Int!
+    saves: Int!
+    cards: CardStats!
+}
+
+type GoalStats {
+    total: Int!
+    penalties: Int!
+    freeKicks: Int!
+}
+
+type CardStats {
+    yellow: Int!
+    red: Int!
+}
+
+# Input types do tworzenia/aktualizacji statystyk
+input PlayerStatsInput {
+    appearances: Int!
+    minutesPlayed: Int!
+    goals: GoalStatsInput!
+    assists: Int!
+    tackles: Int!
+    interceptions: Int!
+    clearances: Int!
+    cleanSheets: Int!
+    saves: Int!
+    cards: CardStatsInput!
+}
+
+input GoalStatsInput {
+    total: Int!
+    penalties: Int!
+    freeKicks: Int!
+}
+
+input CardStatsInput {
+    yellow: Int!
+    red: Int!
+}
+
+# Filtry dla statystyk
+input PlayerStatsFilter {
+    appearances: NumberFilter
+    minutesPlayed: NumberFilter
+    goals: GoalStatsFilter
+    assists: NumberFilter
+    tackles: NumberFilter
+    interceptions: NumberFilter
+    clearances: NumberFilter
+    cleanSheets: NumberFilter
+    saves: NumberFilter
+    cards: CardStatsFilter
+}
+
+input GoalStatsFilter {
+    total: NumberFilter
+    penalties: NumberFilter
+    freeKicks: NumberFilter
+}
+
+input CardStatsFilter {
+    yellow: NumberFilter
+    red: NumberFilter
+}
+
+# Query i Mutation
+extend type Query {
+    playerStats(
+        filter: PlayerStatsFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [PlayerStats!]!
+
+    singlePlayerStats(id: ID!): PlayerStats
+}
+
+extend type Mutation {
+    createPlayerStats(input: PlayerStatsInput!): PlayerStats!
+    updatePlayerStats(id: ID!, input: PlayerStatsInput!): PlayerStats!
+    deletePlayerStats(id: ID!): Boolean!
+}

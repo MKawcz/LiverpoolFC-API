@@ -1,0 +1,63 @@
+type Contract {
+    id: ID!
+    start: DateTime!
+    end: DateTime!
+    salary: Salary!
+    bonuses: [Bonus!]!
+}
+
+type Salary {
+    base: Float!
+    currency: Currency!
+}
+
+type Bonus {
+    type: BonusType!
+    amount: Float!
+}
+
+enum BonusType {
+    GOAL
+    ASSIST
+    CLEAN_SHEET
+    APPEARANCE
+    WIN
+}
+
+input ContractInput {
+    start: DateTime!
+    end: DateTime!
+    salary: SalaryInput!
+    bonuses: [BonusInput!]
+}
+
+input SalaryInput {
+    base: Float!
+    currency: Currency!
+}
+
+input BonusInput {
+    type: BonusType!
+    amount: Float!
+}
+
+input ContractFilter {
+    start: DateTimeFilter
+    end: DateTimeFilter
+    salaryBase: NumberFilter
+}
+
+extend type Query {
+    contracts(
+        filter: ContractFilter
+        sort: SortInput
+        pagination: PaginationInput
+    ): [Contract!]!
+    contract(id: ID!): Contract
+}
+
+extend type Mutation {
+    createContract(input: ContractInput!): Contract!
+    updateContract(id: ID!, input: ContractInput!): Contract!
+    deleteContract(id: ID!): Boolean!
+}
