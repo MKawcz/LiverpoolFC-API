@@ -1,11 +1,9 @@
-// src/graphql/resolvers/contract.js
 import { Contract } from '../../rest/models/Contract.js';
 
 const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po datach
     if (filter.start) {
         const dateConditions = {};
         const { eq, ne, gt, lt, gte, lte } = filter.start;
@@ -22,7 +20,6 @@ const buildFilterConditions = (filter) => {
         }
     }
 
-    // Podobnie dla daty końcowej
     if (filter.end) {
         const dateConditions = {};
         const { eq, ne, gt, lt, gte, lte } = filter.end;
@@ -39,7 +36,6 @@ const buildFilterConditions = (filter) => {
         }
     }
 
-    // Filtrowanie po podstawowej pensji
     if (filter.salaryBase) {
         const { eq, ne, gt, lt, gte, lte } = filter.salaryBase;
         if (eq) conditions['salary.base'] = eq;

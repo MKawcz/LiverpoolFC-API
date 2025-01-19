@@ -1,4 +1,4 @@
-
+#dodawanie lineup i subs!!!
 type Match {
     id: ID!
     season: Season!
@@ -7,7 +7,7 @@ type Match {
     stadium: Stadium!
     opponent: Opponent!
     score: Score
-    home: Boolean!
+    home: String
     lineup: Lineup!
     goals: [Goal!]
     referee: Referee!
@@ -52,7 +52,6 @@ type Referee {
     fourth: String
 }
 
-# Input types dla tworzenia/aktualizacji
 input MatchInput {
     season: ID!
     competition: ID!
@@ -74,17 +73,15 @@ input RefereeInput {
     fourth: String
 }
 
-# Typ filtrujący dla meczu
 input MatchFilter {
     season: ID
     competition: ID
     date: DateTimeFilter
     stadium: ID
     opponentName: StringFilter
-    home: Boolean
+    home: String
 }
 
-# Query i Mutation dla meczów
 type Query {
     matches(
         filter: MatchFilter

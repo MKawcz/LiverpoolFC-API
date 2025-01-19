@@ -1,4 +1,3 @@
-// src/graphql/resolvers/competition.js
 import { Competition } from '../../rest/models/Competition.js';
 
 // Funkcja pomocnicza do budowania warunków filtrowania
@@ -6,7 +5,6 @@ const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po nazwie
     if (filter.name) {
         const { eq, ne, contains, notContains } = filter.name;
         if (eq) conditions.name = eq;
@@ -15,10 +13,8 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions.name = { $not: new RegExp(notContains, 'i') };
     }
 
-    // Filtrowanie po typie rozgrywek
     if (filter.type) conditions.type = filter.type;
 
-    // Filtrowanie po roku utworzenia
     if (filter.yearOfCreation) {
         const { eq, ne, gt, lt, gte, lte } = filter.yearOfCreation;
         if (eq) conditions.yearOfCreation = eq;

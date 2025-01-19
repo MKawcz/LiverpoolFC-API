@@ -3,8 +3,6 @@ type Stadium {
     name: String!
     capacity: Int!
     location: String!
-    createdAt: DateTime!
-    updatedAt: DateTime!
 }
 
 input StadiumInput {

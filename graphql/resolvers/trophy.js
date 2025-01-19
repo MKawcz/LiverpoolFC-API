@@ -4,10 +4,8 @@ const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po konkurencji
     if (filter.competition) conditions.competition = filter.competition;
 
-    // Filtrowanie po dacie zdobycia
     if (filter.wonDate) {
         const dateConditions = {};
         const { eq, ne, gt, lt, gte, lte } = filter.wonDate;
@@ -33,16 +31,13 @@ const trophyResolvers = {
             try {
                 let query = Trophy.find(buildFilterConditions(filter));
 
-                // Populacja powiązanych danych
                 query = query.populate('competition');
 
-                // Implementacja sortowania
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Implementacja paginacji
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);

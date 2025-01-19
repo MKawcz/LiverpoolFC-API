@@ -2,24 +2,50 @@ import { GraphQLScalarType, Kind } from 'graphql';
 
 export const DateTime = new GraphQLScalarType({
     name: 'DateTime',
-    description: 'Own typ to manage date in ISO 8601 format',
+    description: 'Date time scalar in ISO 8601 format',
 
-    // Serializacja (z wartości w bazie do JSON)
     serialize(value) {
-        return value instanceof Date ? value.toISOString() : null;
-    },
+        if (!value) return null;
 
-    // Parsowanie wartości z zapytania
-    parseValue(value) {
-        return new Date(value);
-    },
-
-    // Parsowanie wartości z literału w zapytaniu GraphQL
-    parseLiteral(ast) {
-        if (ast.kind === Kind.STRING) {
-            return new Date(ast.value);
+        if (value instanceof Date) {
+            if (isNaN(value.getTime())) {
+                throw new Error('Invalid Date object');
+            }
+            return value.toISOString();
         }
-        return null;
+
+        if (typeof value === 'string') {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) {
+                throw new Error('Invalid date string');
+            }
+            return date.toISOString();
+        }
+
+        throw new Error('DateTime can only serialize Date objects or date strings');
+    },
+
+    parseValue(value) {
+        if (!value) return null;
+
+        if (typeof value !== 'string') {
+            throw new Error('DateTime must be a string');
+        }
+
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date string');
+        }
+        return date;
+    },
+
+    parseLiteral(ast) {
+        if (ast.kind !== Kind.STRING) return null;
+
+        const date = new Date(ast.value);
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date string');
+        }
+        return date;
     }
 });
-

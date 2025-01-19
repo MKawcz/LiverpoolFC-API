@@ -10,11 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@apollo/server": "^4.11.2",
     "@graphql-tools/schema": "^10.0.7",
     "@grpc/grpc-js": "^1.12.2",
     "apollo-server": "^3.13.0",
-    "apollo-server-express": "^3.13.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "graphql": "^16.9.0",

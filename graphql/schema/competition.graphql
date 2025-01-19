@@ -3,8 +3,6 @@ type Competition {
     name: String!
     type: CompetitionType!
     yearOfCreation: Int!
-    createdAt: DateTime!
-    updatedAt: DateTime!
 }
 
 enum CompetitionType {

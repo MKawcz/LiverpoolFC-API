@@ -4,7 +4,6 @@ const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po nazwie
     if (filter.name) {
         const { eq, ne, contains, notContains } = filter.name;
         if (eq) conditions.name = eq;
@@ -13,7 +12,6 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions.name = { $not: new RegExp(notContains, 'i') };
     }
 
-    // Filtrowanie po pojemności
     if (filter.capacity) {
         const { eq, ne, gt, lt, gte, lte } = filter.capacity;
         if (eq) conditions.capacity = eq;
@@ -24,7 +22,6 @@ const buildFilterConditions = (filter) => {
         if (lte) conditions.capacity = { $lte: lte };
     }
 
-    // Filtrowanie po lokalizacji
     if (filter.location) {
         const { eq, ne, contains, notContains } = filter.location;
         if (eq) conditions.location = eq;
@@ -42,13 +39,11 @@ const stadiumResolvers = {
             try {
                 let query = Stadium.find(buildFilterConditions(filter));
 
-                // Implementacja sortowania
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Implementacja paginacji
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);

@@ -1,14 +1,11 @@
-// src/graphql/resolvers/player.js
 import { Player } from '../../rest/models/Player.js';
 
 const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po imieniu i nazwisku
     if (filter.name) {
         const { eq, ne, contains, notContains } = filter.name;
-        // Szukamy zarówno w imieniu jak i nazwisku
         if (eq) {
             conditions.$or = [
                 { 'name.first': eq },
@@ -35,10 +32,8 @@ const buildFilterConditions = (filter) => {
         }
     }
 
-    // Filtrowanie po pozycji
     if (filter.position) conditions.position = filter.position;
 
-    // Filtrowanie po narodowości
     if (filter.nationality) {
         const { eq, ne, contains, notContains } = filter.nationality;
         if (eq) conditions.nationality = eq;
@@ -47,10 +42,8 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions.nationality = { $not: new RegExp(notContains, 'i') };
     }
 
-    // Filtrowanie po statusie
     if (filter.status) conditions.status = filter.status;
 
-    // Filtrowanie po numerze na koszulce
     if (filter.jerseyNumber) {
         const { eq, ne, gt, lt, gte, lte } = filter.jerseyNumber;
         if (eq) conditions.jerseyNumber = eq;
@@ -70,18 +63,15 @@ const playerResolvers = {
             try {
                 let query = Player.find(buildFilterConditions(filter));
 
-                // Dodajemy populację powiązanych danych
                 query = query
                     .populate('currentContract')
                     .populate('stats');
 
-                // Implementacja sortowania
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Implementacja paginacji
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);

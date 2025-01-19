@@ -1,11 +1,9 @@
-// src/graphql/resolvers/manager.js
 import { Manager } from '../../rest/models/Manager.js';
 
 const buildFilterConditions = (filter) => {
     const conditions = {};
     if (!filter) return conditions;
 
-    // Filtrowanie po nazwie
     if (filter.name) {
         const { eq, ne, contains, notContains } = filter.name;
         if (eq) conditions.name = eq;
@@ -14,7 +12,6 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions.name = { $not: new RegExp(notContains, 'i') };
     }
 
-    // Filtrowanie po narodowości
     if (filter.nationality) {
         const { eq, ne, contains, notContains } = filter.nationality;
         if (eq) conditions.nationality = eq;
@@ -23,7 +20,6 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions.nationality = { $not: new RegExp(notContains, 'i') };
     }
 
-    // Filtrowanie po statusie
     if (filter.status) conditions.status = filter.status;
 
     return conditions;
@@ -35,13 +31,11 @@ const managerResolvers = {
             try {
                 let query = Manager.find(buildFilterConditions(filter));
 
-                // Implementacja sortowania
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Implementacja paginacji
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);

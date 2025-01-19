@@ -1,10 +1,8 @@
 import { PlayerStats } from '../../rest/models/PlayerStats.js';
 
-// Helper function to build nested filter conditions
 const buildNestedFilterConditions = (filter, basePath = '') => {
     const conditions = {};
 
-    // Handle nested filters with NumberFilter
     Object.keys(filter || {}).forEach(key => {
         const value = filter[key];
         if (typeof value === 'object') {
@@ -48,7 +46,6 @@ const buildFilterConditions = (filter) => {
         }
     });
 
-    // Handle nested filters for goals and cards
     if (filter.goals) {
         const goalsConditions = buildNestedFilterConditions(filter.goals, 'goals');
         Object.assign(conditions, goalsConditions);
@@ -66,21 +63,13 @@ const playerStatsResolvers = {
     Query: {
         playerStats: async (_, { filter, sort, pagination }) => {
             try {
-                // Build filter conditions
                 let query = PlayerStats.find(buildFilterConditions(filter));
 
-                // Populate related data (if any references exist)
-                query = query
-                    .populate('player')  // Assuming there's a player reference
-                    .populate('season');  // Assuming stats might be linked to a season
-
-                // Implement sorting
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Implement pagination
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);
@@ -94,9 +83,7 @@ const playerStatsResolvers = {
 
         singlePlayerStats: async (_, { id }) => {
             try {
-                const playerStats = await PlayerStats.findById(id)
-                    .populate('player')
-                    .populate('season');
+                const playerStats = await PlayerStats.findById(id);
 
                 if (!playerStats) {
                     throw new Error('Player stats not found');
@@ -112,10 +99,8 @@ const playerStatsResolvers = {
     Mutation: {
         createPlayerStats: async (_, { input }) => {
             try {
-                // Create a new PlayerStats document
                 const playerStats = new PlayerStats(input);
 
-                // Save the document
                 await playerStats.save();
 
                 return playerStats;
@@ -131,8 +116,8 @@ const playerStatsResolvers = {
                     id,
                     { $set: input },
                     {
-                        new: true,        // Return the updated document
-                        runValidators: true  // Run model validation
+                        new: true,
+                        runValidators: true
                     }
                 );
 
@@ -148,10 +133,8 @@ const playerStatsResolvers = {
 
         deletePlayerStats: async (_, { id }) => {
             try {
-                // Find and delete the player stats
                 const result = await PlayerStats.findByIdAndDelete(id);
 
-                // Return true if a document was deleted, false otherwise
                 return !!result;
             } catch (error) {
                 throw new Error(`Error deleting player stats: ${error.message}`);

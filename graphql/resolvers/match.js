@@ -1,12 +1,10 @@
 import { Match } from '../../rest/models/Match.js';
 
-// Funkcja pomocnicza do budowania warunków filtrowania
 const buildFilterConditions = (filter) => {
     const conditions = {};
 
     if (!filter) return conditions;
 
-    // Filtrowanie po polu string (np. nazwa przeciwnika)
     if (filter.opponentName) {
         const { eq, ne, contains, notContains } = filter.opponentName;
         if (eq) conditions['opponent.name'] = eq;
@@ -15,7 +13,6 @@ const buildFilterConditions = (filter) => {
         if (notContains) conditions['opponent.name'] = { $not: new RegExp(contains, 'i') };
     }
 
-    // Filtrowanie po dacie
     if (filter.date) {
         const dateConditions = {};
         const { eq, ne, gt, lt, gte, lte } = filter.date;
@@ -32,38 +29,31 @@ const buildFilterConditions = (filter) => {
         }
     }
 
-    // Proste filtrowanie po ID
     if (filter.season) conditions.season = filter.season;
     if (filter.competition) conditions.competition = filter.competition;
     if (filter.stadium) conditions.stadium = filter.stadium;
 
-    // Filtrowanie po polu boolean
     if (filter.home !== undefined) conditions.home = filter.home;
 
     return conditions;
 };
 
 const matchResolvers = {
-    // Query resolvers
     Query: {
         matches: async (_, { filter, sort, pagination }) => {
             try {
-                // Budujemy zapytanie
                 let query = Match.find(buildFilterConditions(filter));
 
-                // Dodajemy sortowanie
                 if (sort) {
                     const sortDirection = sort.direction === 'DESC' ? -1 : 1;
                     query = query.sort({ [sort.field]: sortDirection });
                 }
 
-                // Dodajemy paginację
                 if (pagination) {
                     const { page, pageSize } = pagination;
                     query = query.skip((page - 1) * pageSize).limit(pageSize);
                 }
 
-                // Populujemy referencje
                 query = query
                     .populate('season')
                     .populate('competition')
@@ -105,7 +95,6 @@ const matchResolvers = {
         }
     },
 
-    // Mutation resolvers
     Mutation: {
         createMatch: async (_, { input }) => {
             try {
@@ -155,18 +144,6 @@ const matchResolvers = {
             }
         }
     },
-
-    // Field resolvers (jeśli potrzebne)
-    Match: {
-        // Możemy też nadpisać istniejące pole, jeśli potrzebujemy specjalnej logiki
-        score: (match) => {
-            // Jeśli mecz się nie odbył, zwracamy null
-            if (new Date(match.date) > new Date()) {
-                return null;
-            }
-            return match.score;
-        }
-    }
 };
 
 export default matchResolvers;

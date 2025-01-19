@@ -4,8 +4,6 @@ type Manager {
     nationality: String!
     dateOfBirth: DateTime!
     status: ManagerStatus!
-    createdAt: DateTime!
-    updatedAt: DateTime!
 }
 
 enum ManagerStatus {

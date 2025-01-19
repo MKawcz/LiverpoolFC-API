@@ -9,7 +9,6 @@ const loadGraphQLFile = (filename) => {
     return readFileSync(join(__dirname, filename), 'utf-8');
 };
 
-// Łączymy wszystkie pliki schematów
 const typeDefs = `
     ${loadGraphQLFile('common.graphql')}
     ${loadGraphQLFile('match.graphql')}

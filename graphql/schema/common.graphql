@@ -1,20 +1,19 @@
 scalar DateTime
 
-# Typy filtrujące
 input StringFilter {
-    eq: String       # równy (equals)
-    ne: String       # nierówny (not equals)
-    contains: String # zawiera
-    notContains: String # nie zawiera
+    eq: String
+    ne: String
+    contains: String
+    notContains: String
 }
 
 input NumberFilter {
-    eq: Float      # równy
-    ne: Float      # nierówny
-    gt: Float      # większy niż (greater than)
-    lt: Float      # mniejszy niż (less than)
-    gte: Float     # większy lub równy (greater than or equal)
-    lte: Float     # mniejszy lub równy (less than or equal)
+    eq: Float
+    ne: Float
+    gt: Float
+    lt: Float
+    gte: Float
+    lte: Float
 }
 
 input DateTimeFilter {
@@ -26,7 +25,6 @@ input DateTimeFilter {
     lte: DateTime
 }
 
-# Typ dla sortowania
 input SortInput {
     field: String!
     direction: SortDirection = ASC
@@ -37,7 +35,6 @@ enum SortDirection {
     DESC
 }
 
-# Typ dla paginacji
 input PaginationInput {
     page: Int = 1
     pageSize: Int = 10
