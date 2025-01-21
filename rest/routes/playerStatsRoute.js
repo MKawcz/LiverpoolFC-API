@@ -138,7 +138,7 @@ const ALLOWED_FIELDS = [
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/PlayerStats'
- *       204:
+ *       404:
  *         description: No player stats found
  *       500:
  *         description: Server error
@@ -152,7 +152,7 @@ playerStatsRouter.get('/', async (req, res) => {
         res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (stats.length === 0) {
-            return res.status(204).end();
+            return res.status(404).end();
         }
 
         res.status(200).json({

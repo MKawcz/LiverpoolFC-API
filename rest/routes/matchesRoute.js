@@ -265,7 +265,7 @@ const ALLOWED_LINEUP_SUBSTITUTE_FIELDS = ['player'];
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Match'
- *       204:
+ *       404:
  *         description: No matches found
  *       500:
  *         description: Server error
@@ -281,7 +281,7 @@ matchesRouter.get('/', async (req, res) => {
         res.setHeader('X-Resource-Type', 'Match');
 
         if (matches.length === 0) {
-            return res.status(204).end();//wymien 404
+            return res.status(404).end();
         }
 
         res.status(200).json({
@@ -711,7 +711,7 @@ matchesRouter.delete('/:matchId',
  * /matches/{id}/goals:
  *   get:
  *     summary: Get all goals for a match
- *     tags: [Goals]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -736,10 +736,8 @@ matchesRouter.delete('/:matchId',
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Goal'
- *       204:
- *         description: No goals found
  *       404:
- *         description: Match not found
+ *         description: No Match/goals found
  *       500:
  *         description: Server error
  */
@@ -763,7 +761,7 @@ matchesRouter.get('/:matchId/goals',
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
 
             if (match.goals.length === 0) {
-                return res.status(204).end();
+                return res.status(404).end();
             }
 
             res.status(200).json({
@@ -795,7 +793,7 @@ matchesRouter.get('/:matchId/goals',
  * /matches/{id}/goals/{goalIndex}:
  *   get:
  *     summary: Get specific goal from match
- *     tags: [Goals]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -879,7 +877,7 @@ matchesRouter.get('/:matchId/goals/:goalIndex',
  * /matches/{id}/goals:
  *   post:
  *     summary: Add goal to match
- *     tags: [Goals]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -973,7 +971,7 @@ matchesRouter.post('/:matchId/goals',
  * /matches/{id}/goals/{goalIndex}:
  *   put:
  *     summary: Update specific goal
- *     tags: [Goals]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1078,7 +1076,7 @@ matchesRouter.put('/:matchId/goals/:goalIndex',
  * /matches/{id}/goals/{goalIndex}:
  *   delete:
  *     summary: Delete specific goal
- *     tags: [Goals]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1145,7 +1143,7 @@ matchesRouter.delete('/:matchId/goals/:goalIndex',
  * /matches/{id}/lineup:
  *   get:
  *     summary: Get match lineup
- *     tags: [Lineup]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1210,7 +1208,7 @@ matchesRouter.get('/:matchId/lineup',
  * /matches/{id}/lineup/starting:
  *   get:
  *     summary: Get starting lineup
- *     tags: [Lineup]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1274,7 +1272,7 @@ matchesRouter.get('/:matchId/lineup/starting',
  * /matches/{id}/lineup/starting:
  *   put:
  *     summary: Update starting lineup
- *     tags: [Lineup]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1371,7 +1369,7 @@ matchesRouter.put('/:matchId/lineup/starting',
  * /matches/{id}/lineup/substitutes:
  *   get:
  *     summary: Get substitute players
- *     tags: [Lineup]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1435,7 +1433,7 @@ matchesRouter.get('/:matchId/lineup/substitutes',
  * /matches/{id}/lineup/substitutes:
  *   put:
  *     summary: Update all substitute players
- *     tags: [Lineup]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1531,7 +1529,7 @@ matchesRouter.put('/:matchId/lineup/substitutes',
  * /matches/{id}/lineup/substitutions:
  *   get:
  *     summary: Get all substitutions for a match
- *     tags: [Substitutions]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1556,10 +1554,8 @@ matchesRouter.put('/:matchId/lineup/substitutes',
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Substitution'
- *       204:
- *         description: No substitutions found
  *       404:
- *         description: Match not found
+ *         description: No Match/substitutions found
  *       500:
  *         description: Server error
  */
@@ -1583,7 +1579,7 @@ matchesRouter.get('/:matchId/lineup/substitutions',
             res.setHeader('Last-Modified', match.updatedAt.toUTCString());
 
             if (match.lineup.substitutions.length === 0) {
-                return res.status(204).end();
+                return res.status(404).end();
             }
 
             res.status(200).json({
@@ -1617,7 +1613,7 @@ matchesRouter.get('/:matchId/lineup/substitutions',
  * /matches/{id}/lineup/substitutions/{substitutionIndex}:
  *   get:
  *     summary: Get specific substitution from match
- *     tags: [Substitutions]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1703,7 +1699,7 @@ matchesRouter.get('/:matchId/lineup/substitutions/:substitutionIndex',
  * /matches/{id}/lineup/substitutions:
  *   post:
  *     summary: Add substitution to match
- *     tags: [Substitutions]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1799,7 +1795,7 @@ matchesRouter.post('/:matchId/lineup/substitutions',
  * /matches/{id}/lineup/substitutions/{substitutionIndex}:
  *   put:
  *     summary: Update specific substitution
- *     tags: [Substitutions]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id
@@ -1903,7 +1899,7 @@ matchesRouter.put('/:matchId/lineup/substitutions/:substitutionIndex',
  * /matches/{id}/lineup/substitutions/{substitutionIndex}:
  *   delete:
  *     summary: Delete specific substitution
- *     tags: [Substitutions]
+ *     tags: [Matches]
  *     parameters:
  *       - in: path
  *         name: id

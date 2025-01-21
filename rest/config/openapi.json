@@ -1,0 +1,4443 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Liverpool FC API",
+    "version": "1.0.0",
+    "description": "REST API for managing Liverpool Football Club data including players, matches, and more"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8989/api/v1"
+    }
+  ],
+  "paths": {
+    "/competitions": {
+      "get": {
+        "summary": "Get all competitions",
+        "tags": [
+          "Competitions"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of competitions",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of competitions",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Competition"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No competitions found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new competition",
+        "tags": [
+          "Competitions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Competition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Competition created",
+            "headers": {
+              "Location": {
+                "description": "URL of created competition",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/CompetitionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/competitions/{id}": {
+      "get": {
+        "summary": "Get competition by ID",
+        "tags": [
+          "Competitions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Competition found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/CompetitionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Competition not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update competition",
+        "tags": [
+          "Competitions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Competition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Competition updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/CompetitionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Competition not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update competition",
+        "tags": [
+          "Competitions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "yearOfCreation": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Competition updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/CompetitionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Competition not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete competition",
+        "tags": [
+          "Competitions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Competition deleted"
+          },
+          "404": {
+            "description": "Competition not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contracts": {
+      "get": {
+        "summary": "Get all contracts",
+        "tags": [
+          "Contracts"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of contracts",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of contracts",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Contract"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contracts found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new contract",
+        "tags": [
+          "Contracts"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contract created",
+            "headers": {
+              "Location": {
+                "description": "URL of created contract",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ContractResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contracts/{id}": {
+      "get": {
+        "summary": "Get contract by ID",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contract found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ContractResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contract not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contract updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ContractResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Contract not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContractRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contract updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ContractResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Contract not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Contract deleted"
+          },
+          "404": {
+            "description": "Contract not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contracts/{id}/bonuses": {
+      "get": {
+        "summary": "Get all bonuses for a contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of bonuses",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of bonuses",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Bonus"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No bonuses/contract found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add bonus to contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bonus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Bonus created",
+            "headers": {
+              "Location": {
+                "description": "URL of created bonus",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Bonus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Contract not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/contracts/{id}/bonuses/{bonusIndex}": {
+      "get": {
+        "summary": "Get specific bonus from contract",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          },
+          {
+            "in": "path",
+            "name": "bonusIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Bonus index in array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bonus found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Bonus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contract or bonus not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update specific bonus",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          },
+          {
+            "in": "path",
+            "name": "bonusIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Bonus index in array"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bonus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bonus updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Bonus"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Contract or bonus not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete specific bonus",
+        "tags": [
+          "Contracts"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Contract ID"
+          },
+          {
+            "in": "path",
+            "name": "bonusIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Bonus index in array"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Bonus deleted"
+          },
+          "404": {
+            "description": "Contract or bonus not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/managers": {
+      "get": {
+        "summary": "Get all managers",
+        "tags": [
+          "Managers"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of managers",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of managers",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Manager"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No managers found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new manager",
+        "tags": [
+          "Managers"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Manager"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Manager created",
+            "headers": {
+              "Location": {
+                "description": "URL of created manager",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ManagerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/managers/{id}": {
+      "get": {
+        "summary": "Get manager by ID",
+        "tags": [
+          "Managers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Manager ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Manager found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ManagerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Manager not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update manager",
+        "tags": [
+          "Managers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Manager ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Manager"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Manager updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ManagerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Manager not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update manager",
+        "tags": [
+          "Managers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Manager ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "nationality": {
+                    "type": "string"
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ACTIVE",
+                      "INACTIVE",
+                      "SUSPENDED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Manager updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/ManagerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Manager not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete manager",
+        "tags": [
+          "Managers"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Manager ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Manager deleted"
+          },
+          "404": {
+            "description": "Manager not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches": {
+      "get": {
+        "summary": "Get all matches",
+        "tags": [
+          "Matches"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of matches",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of matches",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Match"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No matches found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new match",
+        "tags": [
+          "Matches"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Match created",
+            "headers": {
+              "Location": {
+                "description": "URL of created match",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/MatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}": {
+      "get": {
+        "summary": "Get match by ID",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Match found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/MatchResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Match updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/MatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Match updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/MatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Match deleted"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/goals": {
+      "get": {
+        "summary": "Get all goals for a match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of goals",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of goals",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Goal"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Match/goals found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add goal to match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Goal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Goal created",
+            "headers": {
+              "Location": {
+                "description": "URL of created goal",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Goal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/goals/{goalIndex}": {
+      "get": {
+        "summary": "Get specific goal from match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "goalIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Goal index in array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Goal found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Goal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match or goal not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update specific goal",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "goalIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Goal index in array"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Goal"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Goal updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Goal"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match or goal not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete specific goal",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "goalIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Goal index in array"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Goal deleted"
+          },
+          "404": {
+            "description": "Match or goal not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/lineup": {
+      "get": {
+        "summary": "Get match lineup",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Match lineup",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Lineup"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/lineup/starting": {
+      "get": {
+        "summary": "Get starting lineup",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Starting lineup found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LineupPlayer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update starting lineup",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/LineupPlayer"
+                },
+                "minItems": 11,
+                "maxItems": 11
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Starting lineup updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LineupPlayer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/lineup/substitutes": {
+      "get": {
+        "summary": "Get substitute players",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Substitutes found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LineupPlayer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update all substitute players",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/LineupPlayer"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Substitutes updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LineupPlayer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/lineup/substitutions": {
+      "get": {
+        "summary": "Get all substitutions for a match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of substitutions",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of substitutions",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Substitution"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Match/substitutions found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add substitution to match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Substitution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Substitution created",
+            "headers": {
+              "Location": {
+                "description": "URL of created substitution",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Substitution"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/matches/{id}/lineup/substitutions/{substitutionIndex}": {
+      "get": {
+        "summary": "Get specific substitution from match",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "substitutionIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Substitution index in array"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Substitution found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Substitution"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Match or substitution not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update specific substitution",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "substitutionIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Substitution index in array"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Substitution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Substitution updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Substitution"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Match or substitution not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete specific substitution",
+        "tags": [
+          "Matches"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Match ID"
+          },
+          {
+            "in": "path",
+            "name": "substitutionIndex",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Substitution index in array"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Substitution deleted"
+          },
+          "404": {
+            "description": "Match or substitution not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/players": {
+      "get": {
+        "summary": "Get all players",
+        "tags": [
+          "Players"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of players",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of players",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Player"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No players found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new player",
+        "tags": [
+          "Players"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Player created",
+            "headers": {
+              "Location": {
+                "description": "URL of created player",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "409": {
+            "description": "Jersey number already taken"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/players/{id}": {
+      "get": {
+        "summary": "Get player by ID",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Player ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update player",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Player ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Player updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Player not found"
+          },
+          "409": {
+            "description": "Jersey number already taken"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update player",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Player ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Player"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Player updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Player not found"
+          },
+          "409": {
+            "description": "Jersey number already taken"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete player",
+        "tags": [
+          "Players"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Player ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Player deleted"
+          },
+          "404": {
+            "description": "Player not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/player-stats": {
+      "get": {
+        "summary": "Get all player stats",
+        "tags": [
+          "PlayerStats"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of player stats",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of player stats records",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PlayerStats"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No player stats found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new player stats",
+        "tags": [
+          "PlayerStats"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerStats"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Player stats created",
+            "headers": {
+              "Location": {
+                "description": "URL of created player stats",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/player-stats/{id}": {
+      "get": {
+        "summary": "Get player stats by ID",
+        "tags": [
+          "PlayerStats"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "PlayerStats ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Player stats found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerStatsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Player stats not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update player stats",
+        "tags": [
+          "PlayerStats"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "PlayerStats ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayerStats"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Player stats updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Player stats not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update player stats",
+        "tags": [
+          "PlayerStats"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "PlayerStats ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "appearances": {
+                    "type": "number"
+                  },
+                  "minutesPlayed": {
+                    "type": "number"
+                  },
+                  "goals": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number"
+                      },
+                      "penalties": {
+                        "type": "number"
+                      },
+                      "freeKicks": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "assists": {
+                    "type": "number"
+                  },
+                  "tackles": {
+                    "type": "number"
+                  },
+                  "interceptions": {
+                    "type": "number"
+                  },
+                  "clearances": {
+                    "type": "number"
+                  },
+                  "cleanSheets": {
+                    "type": "number"
+                  },
+                  "saves": {
+                    "type": "number"
+                  },
+                  "cards": {
+                    "type": "object",
+                    "properties": {
+                      "yellow": {
+                        "type": "number"
+                      },
+                      "red": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Player stats updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/PlayerStatsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Player stats not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete player stats",
+        "tags": [
+          "PlayerStats"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "PlayerStats ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Player stats deleted"
+          },
+          "404": {
+            "description": "Player stats not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/seasons": {
+      "get": {
+        "summary": "Get all seasons",
+        "tags": [
+          "Seasons"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of seasons",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of seasons",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Season"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No seasons found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new season",
+        "tags": [
+          "Seasons"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Season"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Season created",
+            "headers": {
+              "Location": {
+                "description": "URL of created season",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "409": {
+            "description": "Season with these years already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/seasons/{id}": {
+      "get": {
+        "summary": "Get season by ID",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Season ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Season found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/SeasonResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Season not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update season",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Season ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Season"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Season updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Season not found"
+          },
+          "409": {
+            "description": "Season with these years already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update season",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Season ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "years": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{4}$"
+                  },
+                  "trophies": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "objectId"
+                    }
+                  },
+                  "manager": {
+                    "type": "string",
+                    "format": "objectId"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "UPCOMING",
+                      "IN_PROGRESS",
+                      "FINISHED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Season updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Season not found"
+          },
+          "409": {
+            "description": "Season with these years already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete season",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Season ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Season deleted"
+          },
+          "404": {
+            "description": "Season not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/stadiums": {
+      "get": {
+        "summary": "Get all stadiums",
+        "tags": [
+          "Stadiums"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of stadiums",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of stadiums",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Stadium"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No stadiums found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new stadium",
+        "tags": [
+          "Stadiums"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Stadium"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stadium created",
+            "headers": {
+              "Location": {
+                "description": "URL of created stadium",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/StadiumResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "409": {
+            "description": "Stadium with this name already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/stadiums/{id}": {
+      "get": {
+        "summary": "Get stadium by ID",
+        "tags": [
+          "Stadiums"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stadium ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stadium found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/StadiumResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Stadium not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update stadium",
+        "tags": [
+          "Stadiums"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stadium ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Stadium"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stadium updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/StadiumResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Stadium not found"
+          },
+          "409": {
+            "description": "Stadium with this name already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update stadium",
+        "tags": [
+          "Stadiums"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stadium ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "capacity": {
+                    "type": "number",
+                    "minimum": 100
+                  },
+                  "location": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stadium updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/StadiumResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Stadium not found"
+          },
+          "409": {
+            "description": "Stadium with this name already exists"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete stadium",
+        "tags": [
+          "Stadiums"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Stadium ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Stadium deleted"
+          },
+          "404": {
+            "description": "Stadium not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/trophies": {
+      "get": {
+        "summary": "Get all trophies",
+        "tags": [
+          "Trophies"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trophies",
+            "headers": {
+              "X-Total-Count": {
+                "description": "Total number of trophies",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Trophy"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No trophies found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new trophy",
+        "tags": [
+          "Trophies"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trophy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Trophy created",
+            "headers": {
+              "Location": {
+                "description": "URL of created trophy",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/TrophyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/trophies/{id}": {
+      "get": {
+        "summary": "Get trophy by ID",
+        "tags": [
+          "Trophies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Trophy ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trophy found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/TrophyResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trophy not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update trophy",
+        "tags": [
+          "Trophies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Trophy ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trophy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trophy updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/TrophyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Trophy not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Partially update trophy",
+        "tags": [
+          "Trophies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Trophy ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "competition": {
+                    "type": "string",
+                    "format": "objectId"
+                  },
+                  "wonDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "prizes": {
+                    "type": "object",
+                    "properties": {
+                      "winner": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "runnerUp": {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      "thirdPlace": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trophy updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/TrophyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "404": {
+            "description": "Trophy not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete trophy",
+        "tags": [
+          "Trophies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Trophy ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Trophy deleted"
+          },
+          "404": {
+            "description": "Trophy not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Competition": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "yearOfCreation"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Competition name (must be unique)"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LEAGUE",
+              "CUP",
+              "FRIENDLY"
+            ],
+            "description": "Competition type"
+          },
+          "yearOfCreation": {
+            "type": "number",
+            "minimum": 1800,
+            "description": "Year when competition was created (cannot be in future)"
+          }
+        }
+      },
+      "Bonus": {
+        "type": "object",
+        "required": [
+          "type",
+          "amount"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "GOAL",
+              "ASSIST",
+              "CLEAN_SHEET",
+              "APPEARANCE",
+              "WIN"
+            ],
+            "description": "Type of bonus"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Bonus amount"
+          }
+        }
+      },
+      "Contract": {
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "salary"
+        ],
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract start date (cannot be in future)"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract end date (must be after start date)"
+          },
+          "salary": {
+            "type": "object",
+            "required": [
+              "base",
+              "currency"
+            ],
+            "properties": {
+              "base": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Base salary amount"
+              },
+              "currency": {
+                "type": "string",
+                "enum": [
+                  "GBP",
+                  "EUR",
+                  "USD"
+                ],
+                "default": "GBP",
+                "description": "Salary currency"
+              }
+            }
+          },
+          "bonuses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Bonus"
+            },
+            "description": "List of contract bonuses"
+          }
+        }
+      },
+      "ContractRequest": {
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "salary"
+        ],
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract start date (cannot be in future)"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract end date (must be after start date)"
+          },
+          "salary": {
+            "type": "object",
+            "required": [
+              "base",
+              "currency"
+            ],
+            "properties": {
+              "base": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Base salary amount"
+              },
+              "currency": {
+                "type": "string",
+                "enum": [
+                  "GBP",
+                  "EUR",
+                  "USD"
+                ],
+                "default": "GBP",
+                "description": "Salary currency"
+              }
+            }
+          }
+        }
+      },
+      "Manager": {
+        "type": "object",
+        "required": [
+          "name",
+          "nationality",
+          "dateOfBirth"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Manager's full name"
+          },
+          "nationality": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Manager's nationality"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Manager's date of birth (must be between 18-100 years old)"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "SUSPENDED"
+            ],
+            "default": "ACTIVE",
+            "description": "Manager's current status"
+          }
+        }
+      },
+      "Goal": {
+        "type": "object",
+        "required": [
+          "scorer",
+          "minute"
+        ],
+        "properties": {
+          "scorer": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Player model"
+          },
+          "assistant": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Player model (optional)"
+          },
+          "minute": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 120,
+            "description": "Minute when the goal was scored"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description of the goal"
+          }
+        }
+      },
+      "Substitution": {
+        "type": "object",
+        "required": [
+          "playerIn",
+          "playerOut",
+          "minute"
+        ],
+        "properties": {
+          "playerIn": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Player model for player coming on"
+          },
+          "playerOut": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Player model for player going off"
+          },
+          "minute": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 120,
+            "description": "Minute when substitution occurred"
+          }
+        }
+      },
+      "LineupPlayer": {
+        "type": "object",
+        "required": [
+          "player"
+        ],
+        "properties": {
+          "player": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Player model"
+          }
+        }
+      },
+      "Lineup": {
+        "type": "object",
+        "properties": {
+          "starting": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineupPlayer"
+            },
+            "minItems": 11,
+            "maxItems": 11,
+            "description": "Must contain exactly 11 players"
+          },
+          "substitutes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineupPlayer"
+            },
+            "description": "List of substitute players"
+          },
+          "substitutions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Substitution"
+            },
+            "description": "List of substitutions made during the match"
+          }
+        }
+      },
+      "Match": {
+        "type": "object",
+        "required": [
+          "season",
+          "competition",
+          "date",
+          "stadium",
+          "opponent",
+          "lineup",
+          "referee"
+        ],
+        "properties": {
+          "season": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Season model"
+          },
+          "competition": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Competition model"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Match date (cannot be in future)"
+          },
+          "stadium": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Stadium model"
+          },
+          "opponent": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "manager": {
+                "type": "string"
+              }
+            }
+          },
+          "score": {
+            "type": "object",
+            "properties": {
+              "home": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              },
+              "away": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              }
+            }
+          },
+          "home": {
+            "type": "boolean"
+          },
+          "lineup": {
+            "$ref": "#/components/schemas/Lineup"
+          },
+          "goals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Goal"
+            }
+          },
+          "referee": {
+            "type": "object",
+            "required": [
+              "main"
+            ],
+            "properties": {
+              "main": {
+                "type": "string"
+              },
+              "assistants": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "fourth": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "MatchRequest": {
+        "type": "object",
+        "required": [
+          "season",
+          "competition",
+          "date",
+          "stadium",
+          "opponent",
+          "lineup",
+          "referee"
+        ],
+        "properties": {
+          "season": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Season model"
+          },
+          "competition": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Competition model"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Match date (cannot be in future)"
+          },
+          "stadium": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Stadium model"
+          },
+          "opponent": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "manager": {
+                "type": "string"
+              }
+            }
+          },
+          "score": {
+            "type": "object",
+            "properties": {
+              "home": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              },
+              "away": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              }
+            }
+          },
+          "home": {
+            "type": "boolean"
+          },
+          "referee": {
+            "type": "object",
+            "required": [
+              "main"
+            ],
+            "properties": {
+              "main": {
+                "type": "string"
+              },
+              "assistants": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "fourth": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PlayerName": {
+        "type": "object",
+        "required": [
+          "first",
+          "last"
+        ],
+        "properties": {
+          "first": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "description": "Player's first name"
+          },
+          "last": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 50,
+            "description": "Player's last name"
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Player's display name (optional)"
+          }
+        }
+      },
+      "MarketValue": {
+        "type": "object",
+        "required": [
+          "value",
+          "currency"
+        ],
+        "properties": {
+          "value": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Player's market value"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "EUR",
+              "GBP",
+              "USD"
+            ],
+            "description": "Currency of the market value"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when market value was set"
+          }
+        }
+      },
+      "Player": {
+        "type": "object",
+        "required": [
+          "name",
+          "position",
+          "nationality",
+          "dateOfBirth",
+          "marketValue"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/PlayerName"
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "GK",
+              "DEF",
+              "MID",
+              "FWD"
+            ],
+            "description": "Player's position"
+          },
+          "nationality": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Player's nationality"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Player's birth date (must be between 15-45 years old)"
+          },
+          "height": {
+            "type": "number",
+            "minimum": 150,
+            "maximum": 220,
+            "description": "Player's height in cm"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 120,
+            "description": "Player's weight in kg"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "INJURED",
+              "SUSPENDED",
+              "ON_LOAN",
+              "INACTIVE"
+            ],
+            "default": "ACTIVE",
+            "description": "Player's current status"
+          },
+          "jerseyNumber": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 99,
+            "description": "Player's jersey number (must be unique)"
+          },
+          "marketValue": {
+            "$ref": "#/components/schemas/MarketValue"
+          },
+          "currentContract": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to current Contract model"
+          },
+          "stats": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to PlayerStats model"
+          }
+        }
+      },
+      "Goals": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Total number of goals scored"
+          },
+          "penalties": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of penalties scored"
+          },
+          "freeKicks": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of free kicks scored"
+          }
+        }
+      },
+      "Cards": {
+        "type": "object",
+        "properties": {
+          "yellow": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of yellow cards received"
+          },
+          "red": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of red cards received"
+          }
+        }
+      },
+      "PlayerStats": {
+        "type": "object",
+        "required": [
+          "appearances",
+          "minutesPlayed"
+        ],
+        "properties": {
+          "appearances": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of appearances made"
+          },
+          "minutesPlayed": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Total minutes played"
+          },
+          "goals": {
+            "$ref": "#/components/schemas/Goals"
+          },
+          "assists": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of assists provided"
+          },
+          "tackles": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of successful tackles"
+          },
+          "interceptions": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of interceptions made"
+          },
+          "clearances": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of clearances made"
+          },
+          "cleanSheets": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of clean sheets kept"
+          },
+          "saves": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of saves made"
+          },
+          "cards": {
+            "$ref": "#/components/schemas/Cards"
+          }
+        }
+      },
+      "Season": {
+        "type": "object",
+        "required": [
+          "years",
+          "manager",
+          "status"
+        ],
+        "properties": {
+          "years": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{4}$",
+            "description": "Season years in format YYYY-YYYY (must be consecutive years)",
+            "example": "2023-2024"
+          },
+          "trophies": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "Array of references to Trophy model"
+          },
+          "manager": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Manager model"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "UPCOMING",
+              "IN_PROGRESS",
+              "FINISHED"
+            ],
+            "default": "UPCOMING",
+            "description": "Current status of the season"
+          }
+        }
+      },
+      "Stadium": {
+        "type": "object",
+        "required": [
+          "name",
+          "capacity",
+          "location"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Stadium name (must be unique)"
+          },
+          "capacity": {
+            "type": "number",
+            "minimum": 100,
+            "description": "Stadium capacity (minimum 100 seats)"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Stadium location"
+          }
+        }
+      },
+      "Prizes": {
+        "type": "object",
+        "required": [
+          "winner"
+        ],
+        "properties": {
+          "winner": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Prize money for winner"
+          },
+          "runnerUp": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Prize money for runner-up (optional)"
+          },
+          "thirdPlace": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Prize money for third place (optional)"
+          }
+        }
+      },
+      "Trophy": {
+        "type": "object",
+        "required": [
+          "competition",
+          "wonDate",
+          "prizes"
+        ],
+        "properties": {
+          "competition": {
+            "type": "string",
+            "format": "objectId",
+            "description": "Reference to Competition model"
+          },
+          "wonDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when trophy was won (cannot be in future)"
+          },
+          "prizes": {
+            "$ref": "#/components/schemas/Prizes"
+          }
+        }
+      }
+    },
+    "responses": {
+      "CompetitionResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Competition"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ContractResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Contract"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "ManagerResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Manager"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "MatchResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Match"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PlayerResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Player"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PlayerStatsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PlayerStats"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "SeasonResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Season"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              },
+              "manager": {
+                "type": "string"
+              },
+              "trophies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "StadiumResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Stadium"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "TrophyResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trophy"
+          },
+          "_links": {
+            "type": "object",
+            "properties": {
+              "self": {
+                "type": "string"
+              },
+              "collection": {
+                "type": "string"
+              },
+              "competition": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

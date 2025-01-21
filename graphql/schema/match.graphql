@@ -1,4 +1,3 @@
-#dodawanie lineup i subs!!!
 type Match {
     id: ID!
     season: Season!
@@ -52,6 +51,29 @@ type Referee {
     fourth: String
 }
 
+input LineupInput {
+    starting: [LineupPlayerInput!]!
+    substitutes: [LineupPlayerInput!]!
+    substitutions: [SubstitutionInput!]!
+}
+
+input LineupPlayerInput {
+    player: ID!
+}
+
+input SubstitutionInput {
+    playerIn: ID!
+    playerOut: ID!
+    minute: Int!
+}
+
+input GoalInput {
+    scorer: ID!
+    assistant: ID
+    minute: Int!
+    description: String
+}
+
 input MatchInput {
     season: ID!
     competition: ID!
@@ -60,6 +82,8 @@ input MatchInput {
     opponent: OpponentInput!
     home: Boolean!
     referee: RefereeInput!
+    lineup: LineupInput
+    goals: [GoalInput!]
 }
 
 input OpponentInput {

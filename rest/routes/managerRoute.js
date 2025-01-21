@@ -80,7 +80,7 @@ const ALLOWED_FIELDS = [
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Manager'
- *       204:
+ *       404:
  *         description: No managers found
  *       500:
  *         description: Server error
@@ -93,7 +93,7 @@ managersRouter.get('/', async (req, res) => {
         res.setHeader('X-Resource-Type', 'Manager');
 
         if (managers.length === 0) {
-            return res.status(204).end();
+            return res.status(404).end();
         }
 
         res.status(200).json({

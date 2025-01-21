@@ -48,6 +48,7 @@ app.use(cors({
     maxAge: 86400
 }));
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use(addCustomHeaders);
 
@@ -71,7 +72,6 @@ app.get('/api/v1', (req, res) => {
     });
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/api/v1/players', playersRouter);
 app.use('/api/v1/matches', matchesRouter);

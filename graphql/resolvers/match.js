@@ -98,17 +98,55 @@ const matchResolvers = {
     Mutation: {
         createMatch: async (_, { input }) => {
             try {
-                const match = new Match({
-                    ...input,
-                    lineup: {
+                const {
+                    lineup = {
                         starting: [],
                         substitutes: [],
                         substitutions: []
-                    }
+                    },
+                    goals = [],
+                    ...restInput
+                } = input;
+
+                const formattedLineup = {
+                    starting: lineup.starting?.map(item => ({
+                        player: item.player
+                    })) || [],
+                    substitutes: lineup.substitutes?.map(item => ({
+                        player: item.player
+                    })) || [],
+                    substitutions: lineup.substitutions?.map(sub => ({
+                        playerIn: sub.playerIn,
+                        playerOut: sub.playerOut,
+                        minute: sub.minute
+                    })) || []
+                };
+
+                const formattedGoals = goals?.map(goal => ({
+                    scorer: goal.scorer,
+                    assistant: goal.assistant,
+                    minute: goal.minute,
+                    description: goal.description
+                })) || [];
+
+                const match = new Match({
+                    ...restInput,
+                    lineup: formattedLineup,
+                    goals: formattedGoals
                 });
 
                 await match.save();
-                return match;
+
+                return await Match.findById(match._id)
+                    .populate('season')
+                    .populate('competition')
+                    .populate('stadium')
+                    .populate('lineup.starting.player')
+                    .populate('lineup.substitutes.player')
+                    .populate('lineup.substitutions.playerIn')
+                    .populate('lineup.substitutions.playerOut')
+                    .populate('goals.scorer')
+                    .populate('goals.assistant');
             } catch (error) {
                 throw new Error(`Error creating match: ${error.message}`);
             }
@@ -116,14 +154,58 @@ const matchResolvers = {
 
         updateMatch: async (_, { id, input }) => {
             try {
+                const {
+                    lineup,
+                    goals,
+                    ...restInput
+                } = input;
+
+                const updateData = { ...restInput };
+
+                // Aktualizacja lineup jeśli zostało podane
+                if (lineup) {
+                    updateData.lineup = {
+                        starting: lineup.starting?.map(item => ({
+                            player: item.player
+                        })),
+                        substitutes: lineup.substitutes?.map(item => ({
+                            player: item.player
+                        })),
+                        substitutions: lineup.substitutions?.map(sub => ({
+                            playerIn: sub.playerIn,
+                            playerOut: sub.playerOut,
+                            minute: sub.minute
+                        }))
+                    };
+                }
+
+                // Aktualizacja golów jeśli zostały podane
+                if (goals) {
+                    updateData.goals = goals.map(goal => ({
+                        scorer: goal.scorer,
+                        assistant: goal.assistant,
+                        minute: goal.minute,
+                        description: goal.description
+                    }));
+                }
+
                 const match = await Match.findByIdAndUpdate(
-                    id,
-                    { $set: input },
-                    {
-                        new: true,        // Zwraca zaktualizowany dokument
-                        runValidators: true // Uruchamia walidatory schematu
-                    }
-                );
+                        id,
+                        { $set: updateData },
+                        {
+                            new: true,
+                            runValidators: true
+                        }
+                    )
+                    .populate('season')
+                    .populate('competition')
+                    .populate('stadium')
+                    .populate('lineup.starting.player')
+                    .populate('lineup.substitutes.player')
+                    .populate('lineup.substitutions.playerIn')
+                    .populate('lineup.substitutions.playerOut')
+                    .populate('goals.scorer')
+                    .populate('goals.assistant');
 
                 if (!match) {
                     throw new Error('Match not found');

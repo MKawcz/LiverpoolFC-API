@@ -71,7 +71,7 @@ const ALLOWED_FIELDS = ['name', 'capacity', 'location'];
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Stadium'
- *       204:
+ *       404:
  *         description: No stadiums found
  *       500:
  *         description: Server error
@@ -85,7 +85,7 @@ stadiumsRouter.get('/', async (req, res) => {
         res.setHeader('Last-Modified', new Date().toUTCString());
 
         if (stadiums.length === 0) {
-            return res.status(204).end();
+            return res.status(404).end();
         }
 
         res.status(200).json({

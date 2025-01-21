@@ -68,7 +68,7 @@ const ALLOWED_FIELDS = ['name', 'type', 'yearOfCreation'];
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Competition'
- *       204:
+ *       404:
  *         description: No competitions found
  *       500:
  *         description: Server error
@@ -81,7 +81,7 @@ competitionRouter.get('/', async (req, res) => {
         res.setHeader('X-Resource-Type', 'Competition');
 
         if (competitions.length === 0) {
-            return res.status(204).end();
+            return res.status(404).end();
         }
 
         res.status(200).json({

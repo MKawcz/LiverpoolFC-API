@@ -134,7 +134,7 @@ const ALLOWED_BONUS_FIELDS = ['type', 'amount'];
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Contract'
- *       204:
+ *       404:
  *         description: No contracts found
  *       500:
  *         description: Server error
@@ -147,7 +147,7 @@ contractRouter.get('/', async (req, res) => {
         res.setHeader('X-Resource-Type', 'Contract');
 
         if (contracts.length === 0) {
-            return res.status(204).end();
+            return res.status(404).end();
         }
 
         res.status(200).json({
@@ -508,7 +508,7 @@ contractRouter.delete('/:contractId', validateObjectId('contractId'), async (req
  * /contracts/{id}/bonuses:
  *   get:
  *     summary: Get all bonuses for a contract
- *     tags: [Bonuses]
+ *     tags: [Contracts]
  *     parameters:
  *       - in: path
  *         name: id
@@ -533,10 +533,8 @@ contractRouter.delete('/:contractId', validateObjectId('contractId'), async (req
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Bonus'
- *       204:
- *         description: No bonuses found
  *       404:
- *         description: Contract not found
+ *         description: No bonuses/contract found
  *       500:
  *         description: Server error
  */
@@ -558,7 +556,7 @@ contractRouter.get('/:contractId/bonuses',
             res.setHeader('Last-Modified', contract.updatedAt.toUTCString());
 
             if (contract.bonuses.length === 0) {
-                return res.status(204).end();
+                return res.status(404).end();
             }
 
             res.status(200).json({
@@ -588,7 +586,7 @@ contractRouter.get('/:contractId/bonuses',
  * /contracts/{id}/bonuses/{bonusIndex}:
  *   get:
  *     summary: Get specific bonus from contract
- *     tags: [Bonuses]
+ *     tags: [Contracts]
  *     parameters:
  *       - in: path
  *         name: id
@@ -668,7 +666,7 @@ contractRouter.get('/:contractId/bonuses/:bonusIndex',
  * /contracts/{id}/bonuses:
  *   post:
  *     summary: Add bonus to contract
- *     tags: [Bonuses]
+ *     tags: [Contracts]
  *     parameters:
  *       - in: path
  *         name: id
@@ -756,7 +754,7 @@ contractRouter.post('/:contractId/bonuses',
  * /contracts/{id}/bonuses/{bonusIndex}:
  *   put:
  *     summary: Update specific bonus
- *     tags: [Bonuses]
+ *     tags: [Contracts]
  *     parameters:
  *       - in: path
  *         name: id
@@ -853,7 +851,7 @@ contractRouter.put('/:contractId/bonuses/:bonusIndex',
  * /contracts/{id}/bonuses/{bonusIndex}:
  *   delete:
  *     summary: Delete specific bonus
- *     tags: [Bonuses]
+ *     tags: [Contracts]
  *     parameters:
  *       - in: path
  *         name: id
